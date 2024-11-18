@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OurNotesAppBackEnd.Identity;
 
-public class ApplicationIdentityDbContext : IdentityDbContext<IdentityUser>
+public class ApplicationIdentityDbContext : IdentityDbContext<AppUser>
 {
     public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
     {
