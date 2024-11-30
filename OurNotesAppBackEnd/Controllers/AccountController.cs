@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Identity;
@@ -10,12 +11,15 @@ namespace OurNotesAppBackEnd.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signinManager;
 
-    public AccountController(UserManager<AppUser> userManager)
+    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signinManager)
     {
         _userManager = userManager;
+        _signinManager = signinManager;
     }
     
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
     {
@@ -43,5 +47,19 @@ public class AccountController : ControllerBase
         }
         
         return BadRequest(ModelState);
+    }
+    
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] object? empty)
+    {
+        if (empty != null)
+        {
+            await _signinManager.SignOutAsync();
+            
+            return Ok("User logged out successfully");
+        }
+
+        return Unauthorized();
     }
 }
