@@ -17,11 +17,6 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddControllers();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]));
 
@@ -32,11 +27,15 @@ builder.Services.AddIdentityApiEndpoints<AppUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+// builder.Services.AddAuthentication()
+    // .AddCookie(IdentityConstants.ApplicationScheme);
 
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
@@ -44,11 +43,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapIdentityApi<AppUser>();
+
 app.UseHttpsRedirection();
 app.UseCors("OurNotesFrontEnd");
+
 app.UseAuthorization();
+
 app.MapControllers();
-app.MapIdentityApi<AppUser>();
 
 using (var scope = app.Services.CreateScope())
 {
