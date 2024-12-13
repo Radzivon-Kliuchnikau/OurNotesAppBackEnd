@@ -8,7 +8,7 @@ using OurNotesAppBackEnd.Models;
 namespace OurNotesAppBackEnd.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/account")]
 public class AccountController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
@@ -51,12 +51,13 @@ public class AccountController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("pingauth")]
-    public async Task<IActionResult> PingAuth()
+    [HttpGet("checkAuth")]
+    public async Task<IActionResult> CheckAuth()
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue(ClaimTypes.Name);
 
-        return Ok(new { Email = email });
+        return Ok(new { Email = email, Name = name });
     }
 
     [Authorize]

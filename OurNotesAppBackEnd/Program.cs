@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OurNotesAppBackEnd.Identity;
@@ -12,9 +13,17 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:5173")
                 .AllowAnyHeader()
-                .AllowCredentials()
-                .WithMethods("POST", "GET");
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
+});
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.Name = ".AspNetCore.OurNotes.Identity";
 });
 
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
@@ -22,7 +31,7 @@ builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddIdentityApiEndpoints<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
     .AddDefaultTokenProviders();
@@ -31,9 +40,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// builder.Services.AddAuthentication()
-    // .AddCookie(IdentityConstants.ApplicationScheme);
 
 var app = builder.Build();
 
