@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using OurNotesAppBackEnd.Models;
 namespace OurNotesAppBackEnd.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/account")]
 public class AccountController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
@@ -18,7 +19,7 @@ public class AccountController : ControllerBase
         _userManager = userManager;
         _signinManager = signinManager;
     }
-    
+
     [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
@@ -45,21 +46,25 @@ public class AccountController : ControllerBase
         {
             ModelState.AddModelError(error.Code, error.Description);
         }
-        
+
         return BadRequest(ModelState);
     }
-    
+
+    [Authorize]
+    [HttpGet("checkAuth")]
+    public async Task<IActionResult> CheckAuth()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var name = User.FindFirstValue(ClaimTypes.Name);
+
+        return Ok(new { Email = email, Name = name });
+    }
+
     [Authorize]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] object? empty)
+    public async Task<IActionResult> Logout()
     {
-        if (empty != null)
-        {
-            await _signinManager.SignOutAsync();
-            
-            return Ok("User logged out successfully");
-        }
-
-        return Unauthorized();
+        await _signinManager.SignOutAsync();
+        return Ok("User logged out successfully");
     }
 }
