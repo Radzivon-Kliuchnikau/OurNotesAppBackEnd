@@ -7,7 +7,7 @@ public interface INotesService
 {
     IEnumerable<Note> GetAllNotes();
 
-    Note? GetNoteById(ObjectId id);
+    Note? GetNoteById(string id);
 
     void AddNote(Note note);
 

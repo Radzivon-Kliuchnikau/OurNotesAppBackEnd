@@ -8,6 +8,7 @@ public class NoteMongoDbRepository : INoteMongoDbRepository
 {
     private readonly NotesAppDbContext _context;
 
+    // ReSharper disable once ConvertToPrimaryConstructor
     public NoteMongoDbRepository(NotesAppDbContext context)
     {
         _context = context;
@@ -37,7 +38,7 @@ public class NoteMongoDbRepository : INoteMongoDbRepository
     {
         var noteToBeUpdated = _context.Notes.FirstOrDefault(n => n.Id == entity.Id);
 
-        if (noteToBeUpdated != null)
+        if (noteToBeUpdated != null) // TODO: Where check note for null? Repo, Service, Controller? 
         {
             noteToBeUpdated.Title = entity.Title;
             noteToBeUpdated.Content = entity.Content;

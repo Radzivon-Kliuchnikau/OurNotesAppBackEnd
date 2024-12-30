@@ -19,9 +19,10 @@ public class NotesService : INotesService
         return _repository.GetAllEntities();
     }
 
-    public Note? GetNoteById(ObjectId id)
+    public Note? GetNoteById(string id) // TODO: This about removing creation on ObjectId from here
     {
-        return _repository.GetEntityById(id);
+        var objectId = new ObjectId(id);
+        return _repository.GetEntityById(objectId);
     }
 
     public void AddNote(Note note)
