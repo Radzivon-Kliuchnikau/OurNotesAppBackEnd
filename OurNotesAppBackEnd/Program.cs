@@ -1,10 +1,16 @@
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OurNotesAppBackEnd.Data;
+using OurNotesAppBackEnd.Data.Repository;
 using OurNotesAppBackEnd.Identity;
+using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Services;
 using OurNotesAppBackEnd.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Console.WriteLine("builder.Configuration[\"MongoDBConnectionURI\"] " + builder.Configuration["MongoDBConnectionURI"]);
 
 builder.Services.AddCors(options =>
 {
@@ -25,6 +31,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.Name = ".AspNetCore.OurNotes.Identity";
 });
+
+var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDBSettings>();
+builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+
+builder.Services.AddDbContext<NotesAppDbContext>(options =>
+{
+    options.UseMongoDB(builder.Configuration["MongoDBConnectionURI"] ?? "", mongoDbSettings?.DatabaseName ?? "");
+});
+
+builder.Services.AddScoped<INoteMongoDbRepository, NoteMongoDbRepository>();
+builder.Services.AddScoped<INotesService, NotesService>();
 
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]));
