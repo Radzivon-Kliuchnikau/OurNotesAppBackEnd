@@ -26,6 +26,11 @@ public class NoteMongoDbRepository : INoteMongoDbRepository
 
     public void AddEntity(Note entity)
     {
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+        
         _context.Notes.Add(entity);
         
         _context.ChangeTracker.DetectChanges();

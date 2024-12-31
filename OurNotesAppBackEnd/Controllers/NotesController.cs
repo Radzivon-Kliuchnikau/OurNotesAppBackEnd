@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Services;
 
@@ -11,39 +13,44 @@ namespace OurNotesAppBackEnd.Controllers;
 public class NotesController : ControllerBase
 {
     private readonly INotesService _notesService;
+    private readonly IMapper _mapper;
 
-    public NotesController(INotesService notesService)
+    public NotesController(INotesService notesService, IMapper mapper)
     {
         _notesService = notesService;
+        _mapper = mapper;
     }
     
     [HttpGet]
-    public ActionResult<IEnumerable<Note>> GetAllNotes()
+    public ActionResult<IEnumerable<NoteReadDto>> GetAllNotes()
     {
         var notes = _notesService.GetAllNotes();
         
-        return Ok(notes);
+        return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
     }
 
     [HttpGet("{id}", Name = "GetNoteById")]
-    public ActionResult<Note> GetNoteById(string id)
+    public ActionResult<NoteReadDto> GetNoteById(string id)
     {
         var note = _notesService.GetNoteById(id);
 
         if (note == null)
-        {
             return NotFound();
+        {
         }
 
-        return Ok(note);
+        return Ok(_mapper.Map<NoteReadDto>(note));
     }
 
     [HttpPost]
-    public IActionResult CreateNote([FromBody] Note note)
+    public ActionResult<NoteReadDto> CreateNote([FromBody] NoteCreateDto note)
     {
-        _notesService.AddNote(note);
+        var noteModel = _mapper.Map<Note>(note);
+        _notesService.AddNote(noteModel);
+
+        var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
         
-        return CreatedAtRoute("GetNoteById", new { id = note.Id.ToString()}, note);
+        return CreatedAtRoute("GetNoteById", new { id = noteReadDto.Id.ToString()}, noteReadDto);
     }
 
     [HttpPut]

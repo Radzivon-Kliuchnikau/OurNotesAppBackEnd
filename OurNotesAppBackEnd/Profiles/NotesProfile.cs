@@ -8,6 +8,8 @@ public class NotesProfile : Profile
 {
     public NotesProfile()
     {
+        // Source -> Target
         CreateMap<Note, NoteReadDto>();
+        CreateMap<NoteCreateDto, Note>();
     }
 }
