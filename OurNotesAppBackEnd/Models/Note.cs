@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 using MongoDB.Bson;
 using MongoDB.EntityFrameworkCore;
 

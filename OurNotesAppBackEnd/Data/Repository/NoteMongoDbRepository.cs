@@ -13,7 +13,7 @@ public class NoteMongoDbRepository : INoteMongoDbRepository
     {
         _context = context;
     }
-    
+
     public IEnumerable<Note> GetAllEntities()
     {
         return _context.Notes.OrderByDescending(n => n.Id).AsNoTracking().AsEnumerable();
@@ -30,52 +30,35 @@ public class NoteMongoDbRepository : INoteMongoDbRepository
         {
             throw new ArgumentNullException(nameof(entity));
         }
-        
+
         _context.Notes.Add(entity);
-        
+
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView); // TODO: We won't use it in production
-        
+
         _context.SaveChanges();
     }
 
     public void EditEntity(Note entity)
     {
-        var noteToBeUpdated = _context.Notes.FirstOrDefault(n => n.Id == entity.Id);
+        _context.Notes.Update(entity);
+        _context.ChangeTracker.DetectChanges();
+        Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 
-        if (noteToBeUpdated != null) // TODO: Where check note for null? Repo, Service, Controller? 
-        {
-            noteToBeUpdated.Title = entity.Title;
-            noteToBeUpdated.Content = entity.Content;
-
-            _context.Notes.Update(noteToBeUpdated);
-            _context.ChangeTracker.DetectChanges();
-            Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
-            
-            _context.SaveChanges();
-        }
-        else
-        {
-            throw new ArgumentException("There is no such note to be updated");
-        }
+        _context.SaveChanges();
     }
 
     public void DeleteEntity(Note entity)
     {
-        var noteToDelete = _context.Notes.FirstOrDefault(n => n.Id == entity.Id);
-
-        if (noteToDelete != null)
+        if (entity == null)
         {
-            _context.Notes.Remove(entity);
-            _context.ChangeTracker.DetectChanges();
-            Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
-            
-            _context.SaveChanges();
-        }
-        else
-        {
-            throw new ArgumentException("There is no such note to be removed");
+            throw new ArgumentException(nameof(entity));
         }
         
+        _context.Notes.Remove(entity);
+        _context.ChangeTracker.DetectChanges();
+        Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
+
+        _context.SaveChanges();
     }
 }

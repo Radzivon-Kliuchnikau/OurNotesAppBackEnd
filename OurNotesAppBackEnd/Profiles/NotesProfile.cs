@@ -11,5 +11,7 @@ public class NotesProfile : Profile
         // Source -> Target
         CreateMap<Note, NoteReadDto>();
         CreateMap<NoteCreateDto, Note>();
+        CreateMap<NoteUpdateDto, Note>();
+        CreateMap<Note, NoteUpdateDto>();
     }
 }

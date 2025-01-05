@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Models;
@@ -30,13 +31,13 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "GetNoteById")]
-    public ActionResult<NoteReadDto> GetNoteById(string id)
+    public ActionResult<NoteReadDto> GetNoteById([FromRoute] string id)
     {
         var note = _notesService.GetNoteById(id);
 
         if (note == null)
-            return NotFound();
         {
+            return NotFound();
         }
 
         return Ok(_mapper.Map<NoteReadDto>(note));
@@ -53,34 +54,54 @@ public class NotesController : ControllerBase
         return CreatedAtRoute("GetNoteById", new { id = noteReadDto.Id.ToString()}, noteReadDto);
     }
 
-    [HttpPut]
-    public IActionResult UpdateNote([FromBody] Note note)
+    [HttpPut("{id}")]
+    public IActionResult UpdateNote([FromRoute] string id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
-        try
+        var noteForUpdateModel = _notesService.GetNoteById(id);
+        if (noteForUpdateModel == null)
         {
-            _notesService.EditNote(note);
-            
-            return NoContent();
-        }
-        catch (Exception exception)
-        {
-            return BadRequest(exception.Message);
+            return NotFound();
         }
 
+        _mapper.Map(noteUpdateDto, noteForUpdateModel);
+        _notesService.EditNote(noteForUpdateModel);
+
+        return NoContent();
     }
 
-    [HttpDelete]
-    public IActionResult DeleteNote([FromBody] Note note)
+    [HttpPatch("{id}")]
+    public ActionResult PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument) // TODO: This about moving it to service or something2
     {
-        try
+        var noteForUpdateModel = _notesService.GetNoteById(id);
+        if (noteForUpdateModel == null)
         {
-            _notesService.DeleteNote(note);
-            
-            return NoContent();
+            return NotFound();
         }
-        catch (Exception exception)
+
+        var noteToPatch = _mapper.Map<NoteUpdateDto>(noteForUpdateModel);
+        patchDocument.ApplyTo(noteToPatch, ModelState);
+        if (!TryValidateModel(noteToPatch))
         {
-            return BadRequest(exception.Message);
+            return ValidationProblem(ModelState);
         }
+
+        _mapper.Map(noteToPatch, noteForUpdateModel);
+        _notesService.EditNote(noteForUpdateModel);
+
+        return NoContent();
+    }
+    
+    [HttpDelete("{id}")]
+    public IActionResult DeleteNote([FromRoute] string id)
+    {
+        var noteForRemoveModel = _notesService.GetNoteById(id);
+        if (noteForRemoveModel == null)
+        {
+            return NotFound();
+        }
+        
+        _notesService.DeleteNote(noteForRemoveModel);
+
+        return NoContent();
     }
 }
