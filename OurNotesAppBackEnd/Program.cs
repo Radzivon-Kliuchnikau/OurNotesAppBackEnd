@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
@@ -10,8 +9,6 @@ using OurNotesAppBackEnd.Services;
 using OurNotesAppBackEnd.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
-
-Console.WriteLine("builder.Configuration[\"MongoDBConnectionURI\"] " + builder.Configuration["MongoDBConnectionURI"]);
 
 builder.Services.AddCors(options =>
 {

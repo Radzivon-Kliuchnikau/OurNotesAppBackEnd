@@ -44,9 +44,9 @@ public class NotesController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<NoteReadDto> CreateNote([FromBody] NoteCreateDto note)
+    public ActionResult<NoteReadDto> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
-        var noteModel = _mapper.Map<Note>(note);
+        var noteModel = _mapper.Map<Note>(noteCreateDto);
         _notesService.AddNote(noteModel);
 
         var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
@@ -70,7 +70,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public ActionResult PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument) // TODO: This about moving it to service or something2
+    public ActionResult PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument)
     {
         var noteForUpdateModel = _notesService.GetNoteById(id);
         if (noteForUpdateModel == null)
