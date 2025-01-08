@@ -9,7 +9,7 @@ namespace OurNotesAppBackEnd.Controllers;
 [Route("api/[controller]")]
 public class AdminController : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
     {
         var usersList = new string[]
