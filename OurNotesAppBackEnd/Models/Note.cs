@@ -1,17 +1,18 @@
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices;
-using MongoDB.Bson;
-using MongoDB.EntityFrameworkCore;
 
 namespace OurNotesAppBackEnd.Models;
 
-[Collection("Notes")]
 public class Note
 {
-    public ObjectId Id { get; set; }
+    [Key] public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    [Required(ErrorMessage = "You should provide a title for a note")]
+    [Required]
+    [MaxLength(255)]
     public string Title { get; set; }
-
+    
     public string Content { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
 }

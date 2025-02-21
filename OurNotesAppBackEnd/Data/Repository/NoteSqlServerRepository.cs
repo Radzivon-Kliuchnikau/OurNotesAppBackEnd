@@ -1,25 +1,22 @@
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Data.Repository;
 
-public class NoteMongoDbRepository : INoteMongoDbRepository
+public class NoteSqlServerRepository : INoteSqlServerRepository
 {
     private readonly NotesAppDbContext _context;
 
-    // ReSharper disable once ConvertToPrimaryConstructor
-    public NoteMongoDbRepository(NotesAppDbContext context)
+    public NoteSqlServerRepository(NotesAppDbContext context)
     {
         _context = context;
     }
-
     public IEnumerable<Note> GetAllEntities()
     {
         return _context.Notes.OrderByDescending(n => n.Id).AsNoTracking().AsEnumerable();
     }
 
-    public Note? GetEntityById(ObjectId id)
+    public Note? GetEntityById(string id)
     {
         return _context.Notes.FirstOrDefault(n => n.Id == id);
     }
