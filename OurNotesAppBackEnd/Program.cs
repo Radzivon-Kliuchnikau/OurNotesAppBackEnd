@@ -35,14 +35,16 @@ builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("Mo
 
 builder.Services.AddDbContext<NotesAppDbContext>(options =>
 {
-    options.UseMongoDB(builder.Configuration["MongoDBConnectionURI"] ?? "", mongoDbSettings?.DatabaseName ?? "");
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
 });
 
-builder.Services.AddScoped<INoteMongoDbRepository, NoteMongoDbRepository>();
+builder.Services.AddScoped<INoteSqlServerRepository, NoteSqlServerRepository>();
 builder.Services.AddScoped<INotesService, NotesService>();
 
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]));
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
+});
 
 builder.Services.AddAuthorization();
 

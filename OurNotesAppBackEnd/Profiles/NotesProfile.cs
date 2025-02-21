@@ -10,8 +10,17 @@ public class NotesProfile : Profile
     {
         // Source -> Target
         CreateMap<Note, NoteReadDto>();
-        CreateMap<NoteCreateDto, Note>();
-        CreateMap<NoteUpdateDto, Note>();
+        CreateMap<NoteCreateDto, Note>()
+            .AfterMap((src, dest) =>
+            {
+                dest.CreatedAt = DateTime.Now;
+                dest.UpdatedAt = DateTime.Now;
+            });
+        CreateMap<NoteUpdateDto, Note>()
+            .AfterMap((src, dest) =>
+            {
+                dest.UpdatedAt = DateTime.Now;
+            });
         CreateMap<Note, NoteUpdateDto>();
     }
 }

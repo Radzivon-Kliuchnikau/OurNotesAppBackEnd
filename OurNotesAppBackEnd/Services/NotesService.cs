@@ -6,10 +6,10 @@ namespace OurNotesAppBackEnd.Services;
 
 public class NotesService : INotesService
 {
-    private readonly INoteMongoDbRepository _repository;
+    private readonly INoteSqlServerRepository _repository;
 
     // ReSharper disable once ConvertToPrimaryConstructor
-    public NotesService(INoteMongoDbRepository repository)
+    public NotesService(INoteSqlServerRepository repository)
     {
         _repository = repository;
     }
@@ -19,10 +19,9 @@ public class NotesService : INotesService
         return _repository.GetAllEntities();
     }
 
-    public Note? GetNoteById(string id) // TODO: This about removing creation on ObjectId from here
+    public Note? GetNoteById(string id)
     {
-        var objectId = new ObjectId(id);
-        return _repository.GetEntityById(objectId);
+        return _repository.GetEntityById(id);
     }
 
     public void AddNote(Note note)
