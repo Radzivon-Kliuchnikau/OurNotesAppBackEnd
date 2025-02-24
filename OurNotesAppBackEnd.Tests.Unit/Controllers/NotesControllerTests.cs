@@ -84,4 +84,27 @@ public class NotesControllerTests
         //Assert
         result.Result.Should().BeOfType<NotFoundResult>();
     }
+
+    [Fact]
+    public void CreateNote_Return_CreatedAtRoute_Created_Note()
+    {
+        //Arrange
+        var generatedNoteId = "generated_note_id";
+        var fakeNoteCreateDto = A.Fake<NoteCreateDto>();
+        var fakeNote = A.Fake<Note>();
+        fakeNote.Id = generatedNoteId;
+        var expectedNoteDto = _mapper.Map<NoteReadDto>(fakeNote);
+
+        A.CallTo(() => _noteService.AddNote(A<Note>.Ignored)).Invokes((Note n) => n.Id = generatedNoteId);
+        
+        //Act
+        var result = _noteController.CreateNote(fakeNoteCreateDto);
+        var createdAtResult = result.Result as CreatedAtRouteResult;
+        var returnedNote = createdAtResult?.Value as NoteReadDto;
+
+        //Assert
+        createdAtResult.Should().NotBeNull();
+        returnedNote.Should().NotBeNull();
+        returnedNote.Id.Should().Be(expectedNoteDto.Id);
+    }
 }
