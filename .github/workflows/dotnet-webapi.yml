@@ -1,4 +1,4 @@
-name: Run Unit Tests
+name: Basic commit Pipeline
 
 on:
   push:
@@ -7,23 +7,23 @@ on:
     branches: ["*"]
 
 jobs:
-  test:
+  build:
+    
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         
       - name: Install .NET Core SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.406
-      
+          
       - name: Restore Dependencies
         run: dotnet restore
         
       - name: Build Project
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build --no-restore
         
       - name: Run Unit Tests
-        run: dotnet test OurNotesAppBackEnd.Tests.Unit/OurNotesAppBackEnd.Tests.Unit.csproj --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal
