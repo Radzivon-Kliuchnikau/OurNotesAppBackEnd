@@ -18,11 +18,11 @@ public class NotesControllerTests
     
     public NotesControllerTests()
     {
-        _noteService = A.Fake<INotesService>();
         var config = new MapperConfiguration(config =>
         {
             config.AddProfile<NotesProfile>();
         });
+        _noteService = A.Fake<INotesService>();
         _mapper = config.CreateMapper();
         _noteController = new NotesController(_noteService, _mapper);
     }
@@ -86,14 +86,13 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public void CreateNote_Return_CreatedAtRoute_Created_Note()
+    public void CreateNote_Return_CreatedAtRoute_New_Note()
     {
         //Arrange
         var generatedNoteId = "generated_note_id";
         var fakeNoteCreateDto = A.Fake<NoteCreateDto>();
-        var fakeNote = A.Fake<Note>();
-        fakeNote.Id = generatedNoteId;
-        var expectedNoteDto = _mapper.Map<NoteReadDto>(fakeNote);
+        var expectedNoteDto = A.Fake<NoteReadDto>();
+        expectedNoteDto.Id = generatedNoteId;
 
         A.CallTo(() => _noteService.AddNote(A<Note>.Ignored)).Invokes((Note n) => n.Id = generatedNoteId);
         
@@ -106,5 +105,73 @@ public class NotesControllerTests
         createdAtResult.Should().NotBeNull();
         returnedNote.Should().NotBeNull();
         returnedNote.Id.Should().Be(expectedNoteDto.Id);
+    }
+
+    [Fact]
+    public void UpdateNote_Return_NoContent_After_Note_Updating()
+    {
+        //Arrange
+        var updatedNoteId = "updated_note_id";
+        var fakeUpdateDto = A.Fake<NoteUpdateDto>();
+        var fakeNote = A.Fake<Note>();
+        fakeNote.Id = updatedNoteId;
+
+        A.CallTo(() => _noteService.GetNoteById(updatedNoteId)).Returns(fakeNote);
+        A.CallTo(() => _noteService.EditNote(fakeNote)).DoesNothing();
+
+        //Act
+        var result = _noteController.UpdateNote(updatedNoteId, fakeUpdateDto);
+        
+        //Assert
+        result.Should().BeOfType<NoContentResult>();
+        A.CallTo(() => _noteService.EditNote(fakeNote)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public void UpdateNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
+    {
+        //Arrange
+        var nonExistingNoteId = "non_existing_note_id";
+        var fakeUpdateDto = A.Fake<NoteUpdateDto>();
+        A.CallTo(() => _noteService.GetNoteById(nonExistingNoteId)).Returns(null);
+
+        //Act
+        var result = _noteController.UpdateNote(nonExistingNoteId, fakeUpdateDto);
+        
+        //Assert
+        result.Should().BeOfType<NotFoundResult>();
+        A.CallTo(() => _noteService.EditNote(A<Note>.Ignored)).MustNotHaveHappened();
+    }
+
+    [Fact]
+    public void DeleteNote_Return_NoContent_After_Note_Deleted()
+    {
+        //Arrange
+        var deletedNoteId = "deleted_note_id";
+        var fakeNote = A.Fake<Note>();
+        A.CallTo(() => _noteService.GetNoteById(deletedNoteId)).Returns(fakeNote);
+        A.CallTo(() => _noteService.DeleteNote(fakeNote)).DoesNothing();
+
+        //Act
+        var result = _noteController.DeleteNote(deletedNoteId);
+
+        //Assert
+        result.Should().BeOfType<NoContentResult>();
+        A.CallTo(() => _noteService.DeleteNote(fakeNote)).MustHaveHappenedOnceExactly();
+    }
+
+    [Fact]
+    public void DeleteNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
+    {
+        //Arrange
+        var nonExistingId = "non_existing_id";
+        A.CallTo(() => _noteService.GetNoteById(nonExistingId)).Returns(null);
+
+        //Act
+        var result = _noteController.DeleteNote(nonExistingId);
+
+        //Assert
+        result.Should().BeOfType<NotFoundResult>();
+        A.CallTo(() => _noteService.DeleteNote(A<Note>.Ignored)).MustNotHaveHappened();
     }
 }
