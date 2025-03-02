@@ -49,7 +49,7 @@ public class NoteSqlServerRepository : INoteSqlServerRepository
     {
         if (entity == null)
         {
-            throw new ArgumentException(nameof(entity));
+            throw new ArgumentNullException(nameof(entity));
         }
         
         _context.Notes.Remove(entity);

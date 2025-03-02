@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using OurNotesAppBackEnd.Data;
 using OurNotesAppBackEnd.Data.Repository;
+using OurNotesAppBackEnd.Extensions;
 using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Services;
@@ -64,6 +65,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.ConfigureExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
