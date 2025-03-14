@@ -21,7 +21,7 @@ public static class ExceptionMiddlewareExtensions
                     await context.Response.WriteAsync(new ErrorDetails
                     {
                         StatusCode = context.Response.StatusCode,
-                        Message = "Internal Server Error"
+                        ErrorMessage = $"Internal Server Error. Something went wrong!"
                     }.ToString());
                 }
             });

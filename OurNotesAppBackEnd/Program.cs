@@ -54,10 +54,9 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddControllers().AddNewtonsoftJson(s =>
-{
-    s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-});
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(s => { s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

@@ -23,11 +23,6 @@ public class NoteSqlServerRepository : INoteSqlServerRepository
 
     public void AddEntity(Note entity)
     {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity));
-        }
-
         _context.Notes.Add(entity);
 
         _context.ChangeTracker.DetectChanges();
@@ -47,11 +42,6 @@ public class NoteSqlServerRepository : INoteSqlServerRepository
 
     public void DeleteEntity(Note entity)
     {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity));
-        }
-        
         _context.Notes.Remove(entity);
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
