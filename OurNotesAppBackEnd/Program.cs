@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using OurNotesAppBackEnd.Data;
 using OurNotesAppBackEnd.Data.Repository;
+using OurNotesAppBackEnd.Extensions;
 using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Services;
@@ -53,10 +54,9 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddControllers().AddNewtonsoftJson(s =>
-{
-    s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-});
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(s => { s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -64,6 +64,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.ConfigureExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
