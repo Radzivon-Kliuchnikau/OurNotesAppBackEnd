@@ -23,6 +23,7 @@ public class NotesController : ControllerBase
     }
     
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<NoteReadDto>))]
     public ActionResult<IEnumerable<NoteReadDto>> GetAllNotes()
     {
         var notes = _notesService.GetAllNotes();
@@ -31,6 +32,8 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "GetNoteById")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NoteReadDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<NoteReadDto> GetNoteById([FromRoute] string id)
     {
         var note = _notesService.GetNoteById(id);
@@ -44,6 +47,8 @@ public class NotesController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(NoteReadDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult<NoteReadDto> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
         var noteModel = _mapper.Map<Note>(noteCreateDto);
@@ -55,6 +60,9 @@ public class NotesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult UpdateNote([FromRoute] string id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
         var noteForUpdateModel = _notesService.GetNoteById(id);
@@ -70,6 +78,9 @@ public class NotesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public ActionResult PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument)
     {
         var noteForUpdateModel = _notesService.GetNoteById(id);
@@ -92,6 +103,9 @@ public class NotesController : ControllerBase
     }
     
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult DeleteNote([FromRoute] string id)
     {
         var noteForRemoveModel = _notesService.GetNoteById(id);
