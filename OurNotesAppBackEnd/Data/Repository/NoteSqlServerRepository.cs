@@ -11,41 +11,41 @@ public class NoteSqlServerRepository : INoteSqlServerRepository
     {
         _context = context;
     }
-    public IEnumerable<Note> GetAllEntities()
+    public async Task<IEnumerable<Note>> GetAllEntitiesAsync()
     {
-        return _context.Notes.OrderByDescending(n => n.Id).AsNoTracking().AsEnumerable();
+        return await _context.Notes.OrderByDescending(n => n.Id).AsNoTracking().ToListAsync();
     }
 
-    public Note? GetEntityById(string id)
+    public async Task<Note?> GetEntityByIdAsync(string id)
     {
-        return _context.Notes.FirstOrDefault(n => n.Id == id);
+        return await _context.Notes.FirstOrDefaultAsync(n => n.Id == id);
     }
 
-    public void AddEntity(Note entity)
+    public async Task AddEntityAsync(Note entity)
     {
-        _context.Notes.Add(entity);
+        await _context.Notes.AddAsync(entity);
 
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView); // TODO: We won't use it in production
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void EditEntity(Note entity)
+    public async Task EditEntity(Note entity)
     {
         _context.Notes.Update(entity);
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void DeleteEntity(Note entity)
+    public async Task DeleteEntity(Note entity)
     {
         _context.Notes.Remove(entity);
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }
