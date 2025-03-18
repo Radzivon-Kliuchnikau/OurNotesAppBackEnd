@@ -14,28 +14,28 @@ public class NotesService : INotesService
         _repository = repository;
     }
 
-    public IEnumerable<Note> GetAllNotes()
+    public async Task<IEnumerable<Note>> GetAllNotes()
     {
-        return _repository.GetAllEntities();
+        return await _repository.GetAllEntitiesAsync();
     }
 
-    public Note? GetNoteById(string id)
+    public async Task<Note?> GetNoteById(string id)
     {
-        return _repository.GetEntityById(id);
+        return await _repository.GetEntityByIdAsync(id);
     }
 
-    public void AddNote(Note note)
+    public async Task AddNote(Note note)
     {
-        _repository.AddEntity(note);
+        await _repository.AddEntityAsync(note);
     }
 
-    public void EditNote(Note note)
+    public async Task EditNote(Note note)
     {
-        _repository.EditEntity(note);
+        await _repository.EditEntity(note);
     }
 
-    public void DeleteNote(Note note)
+    public async Task DeleteNote(Note note)
     {
-        _repository.DeleteEntity(note);
+        await _repository.DeleteEntity(note);
     }
 }

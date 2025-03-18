@@ -5,13 +5,13 @@ namespace OurNotesAppBackEnd.Services;
 
 public interface INotesService
 {
-    IEnumerable<Note> GetAllNotes();
+    Task<IEnumerable<Note>> GetAllNotes();
 
-    Note? GetNoteById(string id);
+    Task<Note?> GetNoteById(string id);
 
-    void AddNote(Note note);
+    Task AddNote(Note note);
 
-    void EditNote(Note note);
+    Task EditNote(Note note);
 
-    void DeleteNote(Note note);
+    Task DeleteNote(Note note);
 }
