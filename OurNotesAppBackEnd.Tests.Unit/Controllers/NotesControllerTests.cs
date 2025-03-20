@@ -2,6 +2,7 @@ using AutoMapper;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OurNotesAppBackEnd.Controllers;
 using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Models;
@@ -14,6 +15,7 @@ public class NotesControllerTests
 {
     private INotesService _noteService;
     private IMapper _mapper;
+    private ILogger<NotesController> _logger;
     private NotesController _noteController;
     
     public NotesControllerTests()
@@ -24,7 +26,8 @@ public class NotesControllerTests
         });
         _noteService = A.Fake<INotesService>();
         _mapper = config.CreateMapper();
-        _noteController = new NotesController(_noteService, _mapper);
+        _logger = A.Fake<ILogger<NotesController>>();
+        _noteController = new NotesController(_noteService, _mapper, _logger);
     }
     
     [Fact]

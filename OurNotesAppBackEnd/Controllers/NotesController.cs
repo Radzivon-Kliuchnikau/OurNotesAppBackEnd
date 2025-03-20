@@ -15,17 +15,20 @@ public class NotesController : ControllerBase
 {
     private readonly INotesService _notesService;
     private readonly IMapper _mapper;
+    private readonly ILogger<NotesController> _logger;
 
-    public NotesController(INotesService notesService, IMapper mapper)
+    public NotesController(INotesService notesService, IMapper mapper, ILogger<NotesController> logger)
     {
         _notesService = notesService;
         _mapper = mapper;
+        _logger = logger;
     }
     
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<NoteReadDto>))]
     public async Task<ActionResult<IEnumerable<NoteReadDto>>> GetAllNotes()
     {
+        _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
         var notes = await _notesService.GetAllNotes();
         
         return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
