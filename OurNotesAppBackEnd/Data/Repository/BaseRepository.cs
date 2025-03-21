@@ -3,27 +3,27 @@ using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Data.Repository;
 
-public class NoteSqlServerRepository : INoteSqlServerRepository
+public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where K : notnull
 {
     private readonly NotesAppDbContext _context;
 
-    public NoteSqlServerRepository(NotesAppDbContext context)
+    public BaseRepository(NotesAppDbContext context)
     {
         _context = context;
     }
-    public async Task<IEnumerable<Note>> GetAllEntitiesAsync()
+    public async Task<IEnumerable<T>> GetAllEntitiesAsync()
     {
-        return await _context.Notes.OrderByDescending(n => n.Id).AsNoTracking().ToListAsync();
+        return await _context.Set<T>().OrderByDescending<T, K>(n => EF.Property<K>(n, "Id")).AsNoTracking().ToListAsync();
     }
 
-    public async Task<Note?> GetEntityByIdAsync(string id)
+    public async Task<T?> GetEntityByIdAsync(K id)
     {
-        return await _context.Notes.FirstOrDefaultAsync(n => n.Id == id);
+        return await _context.Set<T>().FirstOrDefaultAsync(n => EF.Property<K>(n, "Id").Equals(id));
     }
 
-    public async Task AddEntityAsync(Note entity)
+    public async Task AddEntityAsync(T entity)
     {
-        await _context.Notes.AddAsync(entity);
+        await _context.Set<T>().AddAsync(entity);
 
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView); // TODO: We won't use it in production
@@ -31,18 +31,18 @@ public class NoteSqlServerRepository : INoteSqlServerRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task EditEntity(Note entity)
+    public async Task EditEntity(T entity)
     {
-        _context.Notes.Update(entity);
+        _context.Set<T>().Update(entity);
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteEntity(Note entity)
+    public async Task DeleteEntity(T entity)
     {
-        _context.Notes.Remove(entity);
+        _context.Set<T>().Remove(entity);
         _context.ChangeTracker.DetectChanges();
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 

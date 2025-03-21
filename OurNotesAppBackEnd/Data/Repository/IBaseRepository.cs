@@ -1,6 +1,6 @@
 namespace OurNotesAppBackEnd.Data.Repository;
 
-public interface IRepository<T, K>
+public interface IBaseRepository<T, K>
 {
     Task<IEnumerable<T>> GetAllEntitiesAsync();
 
