@@ -6,10 +6,10 @@ namespace OurNotesAppBackEnd.Services;
 
 public class NotesService : INotesService
 {
-    private readonly INoteSqlServerRepository _repository;
+    private readonly IBaseRepository<Note, string> _repository;
 
     // ReSharper disable once ConvertToPrimaryConstructor
-    public NotesService(INoteSqlServerRepository repository)
+    public NotesService(IBaseRepository<Note, string> repository)
     {
         _repository = repository;
     }

@@ -45,7 +45,7 @@ builder.Services.AddDbContext<NotesAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
 });
 
-builder.Services.AddScoped<INoteSqlServerRepository, NoteSqlServerRepository>();
+builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 builder.Services.AddScoped<INotesService, NotesService>();
 
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
