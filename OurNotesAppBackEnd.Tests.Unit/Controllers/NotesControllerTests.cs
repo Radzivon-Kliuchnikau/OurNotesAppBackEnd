@@ -31,7 +31,7 @@ public class NotesControllerTests
     }
     
     [Fact]
-    public async Task GetAllNotes_Return_The_Correct_Number_Of_Notes()
+    public async Task NotesController_GetAllNotes_Return_The_Correct_Number_Of_Notes()
     {
         //Arrange
         var notesCount = 10;
@@ -53,7 +53,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async Task GetNoteById_Return_The_Correct_Note_By_Provided_Id()
+    public async Task NotesController_GetNoteById_Return_The_Correct_Note_By_Provided_Id()
     {
         //Arrange
         var idValue = "B144F85A-2D45-448E-8949-E585BE051F14";
@@ -69,13 +69,14 @@ public class NotesControllerTests
         var returnedNotes = okResult?.Value as NoteReadDto;
 
         //Assert
+        result.Should().BeOfType<ActionResult<NoteReadDto>?>();
         okResult.Should().NotBeNull();
         returnedNotes.Should().NotBeNull();
         returnedNotes.Id.Should().Be(expectedDtoNote.Id);
     }
 
     [Fact]
-    public async Task GetNoteById_Return_The_Not_Found()
+    public async Task NotesController_GetNoteById_Return_The_Not_Found()
     {
         //Arrange
         var unknownId = "fakeId";
@@ -89,7 +90,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async Task CreateNote_Return_CreatedAtRoute_New_Note()
+    public async Task NotesController_CreateNote_Return_CreatedAtRoute_New_Note()
     {
         //Arrange
         var generatedNoteId = "generated_note_id";
@@ -113,7 +114,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async Task UpdateNote_Return_NoContent_After_Note_Updating()
+    public async Task NotesController_UpdateNote_Return_NoContent_After_Note_Updating()
     {
         //Arrange
         var updatedNoteId = "updated_note_id";
@@ -133,7 +134,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async Task UpdateNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
+    public async Task NotesController_UpdateNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
     {
         //Arrange
         var nonExistingNoteId = "non_existing_note_id";
@@ -149,7 +150,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async Task DeleteNote_Return_NoContent_After_Note_Deleted()
+    public async Task NotesController_DeleteNote_Return_NoContent_After_Note_Deleted()
     {
         //Arrange
         var deletedNoteId = "deleted_note_id";
@@ -166,7 +167,7 @@ public class NotesControllerTests
     }
 
     [Fact]
-    public async Task DeleteNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
+    public async Task NotesController_DeleteNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
     {
         //Arrange
         var nonExistingId = "non_existing_id";
