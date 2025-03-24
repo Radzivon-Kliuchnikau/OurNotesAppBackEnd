@@ -25,7 +25,6 @@ public class NotesController : ControllerBase
     }
     
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<NoteReadDto>))]
     public async Task<ActionResult<IEnumerable<NoteReadDto>>> GetAllNotes()
     {
         _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
@@ -35,8 +34,6 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "GetNoteById")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NoteReadDto))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<NoteReadDto>> GetNoteById([FromRoute] string id)
     {
         var note = await _notesService.GetNoteById(id);
@@ -50,8 +47,6 @@ public class NotesController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(NoteReadDto))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<NoteReadDto>> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
         var noteModel = _mapper.Map<Note>(noteCreateDto);
@@ -63,9 +58,6 @@ public class NotesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateNote([FromRoute] string id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
         var noteForUpdateModel = await _notesService.GetNoteById(id);
@@ -81,9 +73,6 @@ public class NotesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument)
     {
         var noteForUpdateModel = await _notesService.GetNoteById(id);
@@ -106,9 +95,6 @@ public class NotesController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteNote([FromRoute] string id)
     {
         var noteForRemoveModel = await _notesService.GetNoteById(id);
