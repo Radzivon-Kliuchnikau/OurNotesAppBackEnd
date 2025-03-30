@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using OurNotesAppBackEnd.Identity;
+using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Utils;
 

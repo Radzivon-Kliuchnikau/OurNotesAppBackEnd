@@ -8,6 +8,7 @@ using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Profiles;
 using OurNotesAppBackEnd.Services;
+using Xunit.Abstractions;
 
 namespace OurNotesAppBackEndTests.Controllers;
 
@@ -17,9 +18,11 @@ public class NotesControllerTests
     private IMapper _mapper;
     private ILogger<NotesController> _logger;
     private NotesController _noteController;
+    private readonly ITestOutputHelper _output;
     
-    public NotesControllerTests()
+    public NotesControllerTests(ITestOutputHelper output)
     {
+        _output = output;
         var config = new MapperConfiguration(config =>
         {
             config.AddProfile<NotesProfile>();
@@ -49,6 +52,7 @@ public class NotesControllerTests
         okResult.Should().NotBeNull();
         returnedNotes.Should().NotBeNull();
         returnedNotes.Count().Should().Be(notesCount).And.Be(expectedDtos.Count);
+        _output.WriteLine("Correct number of notes verified");
         
     }
 

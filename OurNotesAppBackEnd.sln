@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OurNotesAppBackEnd", "OurNo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OurNotesAppBackEnd.Tests.Unit", "OurNotesAppBackEnd.Tests.Unit\OurNotesAppBackEnd.Tests.Unit.csproj", "{81C5D982-0C8B-470F-BDFB-29993843BC23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OurNotesAppBackEnd.Tests.Integration", "OurNotesAppBackEnd.Tests.Integration\OurNotesAppBackEnd.Tests.Integration.csproj", "{1828D6B5-3492-45CC-9FD5-2BBDB9025B2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{81C5D982-0C8B-470F-BDFB-29993843BC23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81C5D982-0C8B-470F-BDFB-29993843BC23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81C5D982-0C8B-470F-BDFB-29993843BC23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1828D6B5-3492-45CC-9FD5-2BBDB9025B2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1828D6B5-3492-45CC-9FD5-2BBDB9025B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1828D6B5-3492-45CC-9FD5-2BBDB9025B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1828D6B5-3492-45CC-9FD5-2BBDB9025B2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
