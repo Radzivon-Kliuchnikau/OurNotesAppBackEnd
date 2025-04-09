@@ -17,7 +17,7 @@ jobs:
       - name: Install .NET Core SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.406
+          dotnet-version: 9.0.4
           
       - name: Restore Dependencies
         run: dotnet restore
