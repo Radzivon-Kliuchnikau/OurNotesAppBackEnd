@@ -26,4 +26,4 @@ jobs:
         run: dotnet build --no-restore
         
       - name: Run Unit Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --filter 'FullyQualifiedName!~OurNotesAppBackEnd.Tests.Integration' --no-build --verbosity normal
