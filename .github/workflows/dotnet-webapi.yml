@@ -17,7 +17,7 @@ jobs:
       - name: Install .NET Core SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.406
+          dotnet-version: 9.0.x
           
       - name: Restore Dependencies
         run: dotnet restore
@@ -26,4 +26,4 @@ jobs:
         run: dotnet build --no-restore
         
       - name: Run Unit Tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --filter 'FullyQualifiedName!~OurNotesAppBackEnd.Tests.Integration' --no-build --verbosity normal

@@ -4,12 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OurNotesAppBackEnd.Identity;
 
-public class ApplicationIdentityDbContext : IdentityDbContext<AppUser>
+public class ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
+    : IdentityDbContext<AppUser>(options)
 {
-    public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

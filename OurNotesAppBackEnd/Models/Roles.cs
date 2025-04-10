@@ -1,4 +1,4 @@
-namespace OurNotesAppBackEnd.Utils;
+namespace OurNotesAppBackEnd.Models;
 
 public enum Roles
 {

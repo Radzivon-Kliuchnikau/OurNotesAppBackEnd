@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
-using OurNotesAppBackEnd.Data;
 using OurNotesAppBackEnd.Data.Repository;
 using OurNotesAppBackEnd.Extensions;
 using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Models;
-using OurNotesAppBackEnd.Services;
 using OurNotesAppBackEnd.Utils;
 using Serilog;
 
@@ -37,16 +35,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = ".AspNetCore.OurNotes.Identity";
 });
 
-var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDBSettings>();
+// var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDBSettings>();
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 
-builder.Services.AddDbContext<NotesAppDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
-});
-
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
-builder.Services.AddScoped<INotesService, NotesService>();
+
+builder.Services.AddNoteServicesInfrastructure(builder.Configuration);
 
 builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
 {
@@ -71,6 +65,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.ApplyMigration();
+
 app.UseSerilogRequestLogging();
 
 app.ConfigureExceptionHandler();
@@ -90,11 +86,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var serviceProvider = scope.ServiceProvider;
-    await SeedDefaultData.CreateDefaultRoles(serviceProvider);
-    await SeedDefaultData.CreateDefaultAdminUser(serviceProvider, builder.Configuration);
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var serviceProvider = scope.ServiceProvider;
+//     await SeedDefaultData.CreateDefaultRoles(serviceProvider);
+//     await SeedDefaultData.CreateDefaultAdminUser(serviceProvider, builder.Configuration);
+// }
 
 app.Run();
