@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using OurNotesAppBackEnd.Data.Repository;
 using OurNotesAppBackEnd.Extensions;
@@ -35,9 +37,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = ".AspNetCore.OurNotes.Identity";
 });
 
-// var mongoDbSettings = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDBSettings>();
-builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDbSettings"));
-
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 
 builder.Services.AddNoteServicesInfrastructure(builder.Configuration);
@@ -47,12 +46,43 @@ builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
 });
 
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 12;
+    })
+    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+        options.DefaultChallengeScheme =
+            options.DefaultForbidScheme =
+                options.DefaultScheme =
+                    options.DefaultSignInScheme =
+                        options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]))
+    };
+});
+
 builder.Services.AddAuthorization();
 
-builder.Services.AddIdentityApiEndpoints<AppUser>()
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-    .AddDefaultTokenProviders();
+// builder.Services.AddIdentityApiEndpoints<AppUser>()
+//     .AddRoles<IdentityRole>()
+//     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+//     .AddDefaultTokenProviders();
 
 builder.Services
     .AddControllers()
@@ -82,6 +112,7 @@ app.MapIdentityApi<AppUser>();
 app.UseHttpsRedirection();
 app.UseCors("OurNotesFrontEnd");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
