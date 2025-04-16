@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OurNotesAppBackEnd.Data;
 
@@ -11,9 +12,11 @@ using OurNotesAppBackEnd.Data;
 namespace OurNotesAppBackEnd.Migrations.NotesAppDb
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class NotesAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250415213745_AddProductAndCommentModels")]
+    partial class AddProductAndCommentModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
