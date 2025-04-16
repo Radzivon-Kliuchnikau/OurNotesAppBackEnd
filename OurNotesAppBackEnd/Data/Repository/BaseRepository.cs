@@ -5,9 +5,9 @@ namespace OurNotesAppBackEnd.Data.Repository;
 
 public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where K : notnull
 {
-    private readonly NotesAppDbContext _context;
+    private readonly ApplicationDbContext _context;
 
-    public BaseRepository(NotesAppDbContext context)
+    public BaseRepository(ApplicationDbContext context)
     {
         _context = context;
     }

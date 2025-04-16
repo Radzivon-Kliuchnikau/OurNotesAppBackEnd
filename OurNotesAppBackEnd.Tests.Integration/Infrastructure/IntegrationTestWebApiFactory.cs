@@ -22,7 +22,7 @@ public class IntegrationTestWebApiFactory : WebApplicationFactory<IApiMarker>, I
         builder.ConfigureServices(services =>
         {
             var descriptor =
-                services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<NotesAppDbContext>));
+                services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             var identityDescriptor = services.SingleOrDefault(d =>
                 d.ServiceType == typeof(DbContextOptions<ApplicationIdentityDbContext>));
             if (descriptor != null && identityDescriptor != null)
@@ -34,7 +34,7 @@ public class IntegrationTestWebApiFactory : WebApplicationFactory<IApiMarker>, I
             services.AddAuthentication("Test")
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
             
-            services.AddDbContext<NotesAppDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_testingSqlDb.GetConnectionString(),
                     sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(2), null)));
             services.AddDbContext<ApplicationIdentityDbContext>(options =>

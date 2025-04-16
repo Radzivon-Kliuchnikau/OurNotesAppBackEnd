@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using OurNotesAppBackEnd.Data;
 using OurNotesAppBackEnd.Data.Repository;
 using OurNotesAppBackEnd.Extensions;
 using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Services;
 using OurNotesAppBackEnd.Utils;
 using Serilog;
 
@@ -39,22 +41,27 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
 
-builder.Services.AddNoteServicesInfrastructure(builder.Configuration);
-
-builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+builder.Services.AddScoped<INotesService, NotesService>();
+        
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
 });
 
-builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-    {
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequiredLength = 12;
-    })
-    .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+// builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
+// {
+//     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
+// });
+
+// builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+//     {
+//         options.Password.RequireDigit = true;
+//         options.Password.RequireLowercase = true;
+//         options.Password.RequireUppercase = true;
+//         options.Password.RequireNonAlphanumeric = true;
+//         options.Password.RequiredLength = 12;
+//     })
+//     .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 
 builder.Services.AddAuthentication(options =>
 {

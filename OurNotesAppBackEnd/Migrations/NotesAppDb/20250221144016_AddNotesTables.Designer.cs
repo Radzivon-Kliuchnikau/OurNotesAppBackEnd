@@ -11,7 +11,7 @@ using OurNotesAppBackEnd.Data;
 
 namespace OurNotesAppBackEnd.Migrations.NotesAppDb
 {
-    [DbContext(typeof(NotesAppDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20250221144016_AddNotesTables")]
     partial class AddNotesTables
     {

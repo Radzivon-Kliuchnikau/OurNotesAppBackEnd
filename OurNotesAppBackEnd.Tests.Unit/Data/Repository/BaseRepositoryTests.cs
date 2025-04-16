@@ -8,7 +8,7 @@ namespace OurNotesAppBackEndTests.Data.Repository;
 
 public class BaseRepositoryTests
 {
-    private NotesAppDbContext? _context;
+    private ApplicationDbContext? _context;
     private readonly string _noteId = Guid.NewGuid().ToString();
     private readonly Note _note;
 
@@ -22,10 +22,10 @@ public class BaseRepositoryTests
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        var options = new DbContextOptionsBuilder<NotesAppDbContext>()
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-        _context = new NotesAppDbContext(options);
+        _context = new ApplicationDbContext(options);
     }
 
     [Fact]
