@@ -1,7 +1,6 @@
-using MongoDB.Bson;
 using OurNotesAppBackEnd.Models;
 
-namespace OurNotesAppBackEnd.Services;
+namespace OurNotesAppBackEnd.Interfaces;
 
 public interface INotesService
 {

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OurNotesAppBackEnd.Controllers;
 using OurNotesAppBackEnd.Dtos;
+using OurNotesAppBackEnd.Dtos.Note;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Profiles;
 using OurNotesAppBackEnd.Services;

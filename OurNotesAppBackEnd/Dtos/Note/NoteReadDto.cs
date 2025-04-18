@@ -1,7 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
-
-namespace OurNotesAppBackEnd.Dtos;
+namespace OurNotesAppBackEnd.Dtos.Note;
 
 public class NoteReadDto
 {

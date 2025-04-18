@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Data.Repository;

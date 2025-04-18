@@ -1,4 +1,4 @@
-namespace OurNotesAppBackEnd.Data.Repository;
+namespace OurNotesAppBackEnd.Interfaces;
 
 public interface IBaseRepository<T, K>
 {

@@ -7,6 +7,7 @@ using OurNotesAppBackEnd.Data;
 using OurNotesAppBackEnd.Data.Repository;
 using OurNotesAppBackEnd.Extensions;
 using OurNotesAppBackEnd.Identity;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Services;
 using OurNotesAppBackEnd.Utils;
@@ -39,10 +40,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.Name = ".AspNetCore.OurNotes.Identity";
 });
 
-builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(s => { s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); });
 
-builder.Services.AddScoped<INotesService, NotesService>();
-        
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
@@ -63,46 +64,48 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //     })
 //     .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme =
-        options.DefaultChallengeScheme =
-            options.DefaultForbidScheme =
-                options.DefaultScheme =
-                    options.DefaultSignInScheme =
-                        options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["JWT:Issuer"],
-        ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:Audience"],
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]))
-    };
-});
+// builder.Services.AddAuthentication(options =>
+// {
+//     options.DefaultAuthenticateScheme =
+//         options.DefaultChallengeScheme =
+//             options.DefaultForbidScheme =
+//                 options.DefaultScheme =
+//                     options.DefaultSignInScheme =
+//                         options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+// }).AddJwtBearer(options =>
+// {
+//     options.TokenValidationParameters = new TokenValidationParameters
+//     {
+//         ValidateIssuer = true,
+//         ValidIssuer = builder.Configuration["JWT:Issuer"],
+//         ValidateAudience = true,
+//         ValidAudience = builder.Configuration["JWT:Audience"],
+//         ValidateIssuerSigningKey = true,
+//         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]))
+//     };
+// });
 
-builder.Services.AddAuthorization();
+// builder.Services.AddAuthorization();
 
 // builder.Services.AddIdentityApiEndpoints<AppUser>()
 //     .AddRoles<IdentityRole>()
 //     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
 //     .AddDefaultTokenProviders();
 
-builder.Services
-    .AddControllers()
-    .AddNewtonsoftJson(s => { s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); });
+
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
+builder.Services.AddScoped<INotesService, NotesService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 var app = builder.Build();
 
-app.ApplyMigration();
+// app.ApplyMigration();
 
 app.UseSerilogRequestLogging();
 
@@ -114,12 +117,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapIdentityApi<AppUser>();
+// app.MapIdentityApi<AppUser>();
 
 app.UseHttpsRedirection();
 app.UseCors("OurNotesFrontEnd");
 
-app.UseAuthentication();
+// app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

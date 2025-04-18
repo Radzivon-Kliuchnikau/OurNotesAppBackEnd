@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos;
+using OurNotesAppBackEnd.Dtos.Note;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Services;
 
