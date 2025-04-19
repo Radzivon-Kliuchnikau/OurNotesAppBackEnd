@@ -6,7 +6,6 @@ using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
-using OurNotesAppBackEnd.Services;
 
 namespace OurNotesAppBackEnd.Controllers;
 
@@ -15,13 +14,13 @@ namespace OurNotesAppBackEnd.Controllers;
 [ApiController]
 public class NotesController : ControllerBase
 {
-    private readonly INotesService _notesService;
+    private readonly INoteRepository _noteRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NotesController> _logger;
 
-    public NotesController(INotesService notesService, IMapper mapper, ILogger<NotesController> logger)
+    public NotesController(INoteRepository noteRepository, IMapper mapper, ILogger<NotesController> logger)
     {
-        _notesService = notesService;
+        _noteRepository = noteRepository;
         _mapper = mapper;
         _logger = logger;
     }
@@ -30,7 +29,7 @@ public class NotesController : ControllerBase
     public async Task<ActionResult<IEnumerable<NoteReadDto>>> GetAllNotes()
     {
         _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
-        var notes = await _notesService.GetAllNotes();
+        var notes = await _noteRepository.GetAllEntitiesAsync();
         
         return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
     }
@@ -38,7 +37,7 @@ public class NotesController : ControllerBase
     [HttpGet("{id}", Name = "GetNoteById")]
     public async Task<ActionResult<NoteReadDto>> GetNoteById([FromRoute] string id)
     {
-        var note = await _notesService.GetNoteById(id);
+        var note = await _noteRepository.GetEntityByIdAsync(id);
 
         if (note == null)
         {
@@ -52,7 +51,7 @@ public class NotesController : ControllerBase
     public async Task<ActionResult<NoteReadDto>> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
         var noteModel = _mapper.Map<Note>(noteCreateDto);
-        await _notesService.AddNote(noteModel);
+        await _noteRepository.AddEntityAsync(noteModel);
 
         var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
         
@@ -62,14 +61,14 @@ public class NotesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateNote([FromRoute] string id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
-        var noteForUpdateModel = await _notesService.GetNoteById(id);
+        var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)
         {
             return NotFound();
         }
 
         _mapper.Map(noteUpdateDto, noteForUpdateModel);
-        await _notesService.EditNote(noteForUpdateModel);
+        await _noteRepository.EditEntity(noteForUpdateModel);
 
         return NoContent();
     }
@@ -77,7 +76,7 @@ public class NotesController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<ActionResult> PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument)
     {
-        var noteForUpdateModel = await _notesService.GetNoteById(id);
+        var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)
         {
             return NotFound();
@@ -91,7 +90,7 @@ public class NotesController : ControllerBase
         }
 
         _mapper.Map(noteToPatch, noteForUpdateModel);
-        await _notesService.EditNote(noteForUpdateModel);
+        await _noteRepository.EditEntity(noteForUpdateModel);
 
         return NoContent();
     }
@@ -99,13 +98,13 @@ public class NotesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteNote([FromRoute] string id)
     {
-        var noteForRemoveModel = await _notesService.GetNoteById(id);
+        var noteForRemoveModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForRemoveModel == null)
         {
             return NotFound();
         }
         
-        await _notesService.DeleteNote(noteForRemoveModel);
+        await _noteRepository.DeleteEntity(noteForRemoveModel);
 
         return NoContent();
     }

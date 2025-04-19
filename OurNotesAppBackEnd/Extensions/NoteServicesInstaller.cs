@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using OurNotesAppBackEnd.Data;
-using OurNotesAppBackEnd.Services;
 
 namespace OurNotesAppBackEnd.Extensions;
 

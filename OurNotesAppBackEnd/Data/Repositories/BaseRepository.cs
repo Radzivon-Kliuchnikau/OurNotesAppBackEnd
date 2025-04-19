@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OurNotesAppBackEnd.Interfaces;
-using OurNotesAppBackEnd.Models;
 
-namespace OurNotesAppBackEnd.Data.Repository;
+namespace OurNotesAppBackEnd.Data.Repositories;
 
 public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where K : notnull
 {

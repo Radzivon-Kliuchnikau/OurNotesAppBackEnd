@@ -4,12 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using OurNotesAppBackEnd.Data;
-using OurNotesAppBackEnd.Data.Repository;
+using OurNotesAppBackEnd.Data.Repositories;
 using OurNotesAppBackEnd.Extensions;
 using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
-using OurNotesAppBackEnd.Services;
 using OurNotesAppBackEnd.Utils;
 using Serilog;
 
@@ -100,8 +99,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
-builder.Services.AddScoped<INotesService, NotesService>();
+builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 var app = builder.Build();
 

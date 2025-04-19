@@ -1,5 +1,4 @@
-using OurNotesAppBackEnd.Models;
-
+using OurNotesAppBackEnd.Dtos.Comment;
 namespace OurNotesAppBackEnd.Dtos.Product;
 
 public class ProductReadDto
@@ -15,6 +14,6 @@ public class ProductReadDto
     public string Image { get; set; } = string.Empty;
 
     public decimal RawPrice { get; set; }
-
-    public List<Comment> Comments { get; set; } = [];
+    
+    public List<CommentReadDto> Comments { get; set; } = [];
 }

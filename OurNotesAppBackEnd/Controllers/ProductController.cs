@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos.Product;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
-using OurNotesAppBackEnd.Services;
 
 namespace OurNotesAppBackEnd.Controllers;
 
@@ -56,16 +55,15 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] ProductUpdateDto productUpdateDto)
     {
         var productModel = await _productRepository.GetEntityByIdAsync(id);
-
         if (productModel == null)
         {
             return NotFound();
         }
         
-        // Sourse => Desctination
+        // Source => Destination
         _mapper.Map(productUpdateDto, productModel);
         await _productRepository.EditEntity(productModel);
-
+        
         return Ok(_mapper.Map<ProductReadDto>(productModel));
     }
 
@@ -74,14 +72,13 @@ public class ProductController : ControllerBase
     public async Task<IActionResult> RemoveProduct([FromRoute] int id)
     {
         var product = await _productRepository.GetEntityByIdAsync(id);
-
         if (product == null)
         {
             return NotFound();
         }
-
+        
         await _productRepository.DeleteEntity(product);
-
+        
         return NoContent();
     }
 }

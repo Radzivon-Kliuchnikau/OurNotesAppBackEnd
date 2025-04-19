@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using OurNotesAppBackEnd.Data;
-using OurNotesAppBackEnd.Data.Repository;
+using OurNotesAppBackEnd.Data.Repositories;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEndTests.Data.Repository;
