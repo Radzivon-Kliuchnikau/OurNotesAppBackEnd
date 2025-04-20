@@ -4,7 +4,7 @@ using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Data.Repositories;
 
-public class ProductRepository(ApplicationDbContext context) : BaseRepository<Product, int>(context), IProductRepository
+public class ProductRepository(ApplicationDbContext context) : BaseRepository<Product, Guid>(context), IProductRepository
 {
     private readonly ApplicationDbContext _context = context;
 

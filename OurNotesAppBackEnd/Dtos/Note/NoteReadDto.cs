@@ -1,9 +1,9 @@
+using OurNotesAppBackEnd.Models;
+
 namespace OurNotesAppBackEnd.Dtos.Note;
 
-public class NoteReadDto
+public class NoteReadDto : BaseModel
 {
-    public string Id { get; set; }
-
     public string Title { get; set; }
 
     public string Content { get; set; }

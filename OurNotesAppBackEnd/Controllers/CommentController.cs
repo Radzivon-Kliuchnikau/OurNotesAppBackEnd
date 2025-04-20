@@ -29,7 +29,7 @@ public class CommentController : ControllerBase
 
     [HttpGet()]
     [Route("{id}")]
-    public async Task<IActionResult> GetCommentById([FromRoute] int id)
+    public async Task<IActionResult> GetCommentById([FromRoute] Guid id)
     {
         var comment = await _commentRepository.GetEntityByIdAsync(id);
 
@@ -48,7 +48,7 @@ public class CommentController : ControllerBase
 
     [HttpPost]
     [Route("{id}")]
-    public async Task<IActionResult> UpdateComment([FromRoute] int id, [FromBody] CommentUpdateDto commentUpdateDto)
+    public async Task<IActionResult> UpdateComment([FromRoute] Guid id, [FromBody] CommentUpdateDto commentUpdateDto)
     {
         var commentModel = await _commentRepository.GetEntityByIdAsync(id);
         if (commentModel == null)
@@ -65,7 +65,7 @@ public class CommentController : ControllerBase
 
     [HttpDelete]
     [Route("{id}")]
-    public async Task<IActionResult> RemoveComment([FromRoute] int id)
+    public async Task<IActionResult> RemoveComment([FromRoute] Guid id)
     {
         var comment = await _commentRepository.GetEntityByIdAsync(id);
 

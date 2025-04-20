@@ -29,7 +29,7 @@ public class ProductController : ControllerBase
 
     [HttpGet]
     [Route("{id}")]
-    public async Task<IActionResult> GetProductById([FromRoute] int id)
+    public async Task<IActionResult> GetProductById([FromRoute] Guid id)
     {
         var product = await _productRepository.GetEntityByIdAsync(id);
 
@@ -52,7 +52,7 @@ public class ProductController : ControllerBase
 
     [HttpPut]
     [Route("{id}")]
-    public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] ProductUpdateDto productUpdateDto)
+    public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] ProductUpdateDto productUpdateDto)
     {
         var productModel = await _productRepository.GetEntityByIdAsync(id);
         if (productModel == null)
@@ -69,7 +69,7 @@ public class ProductController : ControllerBase
 
     [HttpDelete]
     [Route("{id}")]
-    public async Task<IActionResult> RemoveProduct([FromRoute] int id)
+    public async Task<IActionResult> RemoveProduct([FromRoute] Guid id)
     {
         var product = await _productRepository.GetEntityByIdAsync(id);
         if (product == null)

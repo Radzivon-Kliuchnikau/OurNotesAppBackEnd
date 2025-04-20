@@ -1,7 +1,9 @@
 using OurNotesAppBackEnd.Dtos.Comment;
+using OurNotesAppBackEnd.Models;
+
 namespace OurNotesAppBackEnd.Dtos.Product;
 
-public class ProductReadDto
+public class ProductReadDto : BaseModel
 {
     public int  Id { get; set; }
     

@@ -1,9 +1,9 @@
+using OurNotesAppBackEnd.Models;
+
 namespace OurNotesAppBackEnd.Dtos.Comment;
 
-public class CommentReadDto
+public class CommentReadDto : BaseModel
 {
-    public int Id { get; set; }
-    
     public string Title { get; set; } = string.Empty;
 
     public string Content { get; set; } = string.Empty;

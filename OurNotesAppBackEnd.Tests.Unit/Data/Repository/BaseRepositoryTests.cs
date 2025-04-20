@@ -9,7 +9,7 @@ namespace OurNotesAppBackEndTests.Data.Repository;
 public class BaseRepositoryTests
 {
     private ApplicationDbContext? _context;
-    private readonly string _noteId = Guid.NewGuid().ToString();
+    private readonly Guid _noteId = Guid.NewGuid();
     private readonly Note _note;
 
     public BaseRepositoryTests()
@@ -45,7 +45,7 @@ public class BaseRepositoryTests
         }
 
         await _context!.SaveChangesAsync();
-        var notesRepository = new BaseRepository<Note, string>(_context);
+        var notesRepository = new BaseRepository<Note, Guid>(_context);
 
         // Act
         var result = (await notesRepository.GetAllEntitiesAsync()).ToList();
@@ -63,7 +63,7 @@ public class BaseRepositoryTests
     public async void BaseRepository_GetAllEntitiesAsync_Return_Empty_Array_When_DataBase_Is_Empty()
     {
         // Arrange
-        var notesRepository = new BaseRepository<Note, string>(_context!);
+        var notesRepository = new BaseRepository<Note, Guid>(_context!);
 
         // Act
         var result = (await notesRepository.GetAllEntitiesAsync()).ToList();
@@ -78,7 +78,7 @@ public class BaseRepositoryTests
         // Arrange
         await _context!.Notes.AddAsync(_note);
         await _context.SaveChangesAsync();
-        var noteRepository = new BaseRepository<Note, string>(_context);
+        var noteRepository = new BaseRepository<Note, Guid>(_context);
 
         // Act
         var result = await noteRepository.GetEntityByIdAsync(_noteId);
@@ -93,7 +93,7 @@ public class BaseRepositoryTests
     public async void BaseRepository_AddEntityAsync_New_Note_Should_Be_Added_To_DataBase()
     {
         // Arrange
-        var noteRepository = new BaseRepository<Note, string>(_context!);
+        var noteRepository = new BaseRepository<Note, Guid>(_context!);
 
         // Act
         await noteRepository.AddEntityAsync(_note);
@@ -122,7 +122,7 @@ public class BaseRepositoryTests
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        var noteRepository = new BaseRepository<Note, string>(_context!);
+        var noteRepository = new BaseRepository<Note, Guid>(_context!);
 
         // Act
         await noteRepository.EditEntity(updatedNote);
@@ -141,7 +141,7 @@ public class BaseRepositoryTests
         // Arrange
         await _context!.Notes.AddAsync(_note);
         await _context.SaveChangesAsync();
-        var noteRepository = new BaseRepository<Note, string>(_context);
+        var noteRepository = new BaseRepository<Note, Guid>(_context);
 
         // Act
         await noteRepository.DeleteEntity(_note);

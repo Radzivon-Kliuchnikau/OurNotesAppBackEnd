@@ -35,7 +35,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "GetNoteById")]
-    public async Task<ActionResult<NoteReadDto>> GetNoteById([FromRoute] string id)
+    public async Task<ActionResult<NoteReadDto>> GetNoteById([FromRoute] Guid id)
     {
         var note = await _noteRepository.GetEntityByIdAsync(id);
 
@@ -59,7 +59,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateNote([FromRoute] string id, [FromBody] NoteUpdateDto noteUpdateDto)
+    public async Task<IActionResult> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
         var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)
@@ -74,7 +74,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult> PartialNoteUpdate([FromRoute] string id, JsonPatchDocument<NoteUpdateDto> patchDocument)
+    public async Task<ActionResult> PartialNoteUpdate([FromRoute] Guid id, JsonPatchDocument<NoteUpdateDto> patchDocument)
     {
         var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)
@@ -96,7 +96,7 @@ public class NotesController : ControllerBase
     }
     
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteNote([FromRoute] string id)
+    public async Task<IActionResult> DeleteNote([FromRoute] Guid id)
     {
         var noteForRemoveModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForRemoveModel == null)

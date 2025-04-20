@@ -1,9 +1,7 @@
 namespace OurNotesAppBackEnd.Models;
 
-public class Comment
+public class Comment : BaseModel
 {
-    public int Id { get; set; }
-
     public string Title { get; set; } = string.Empty;
 
     public string Content { get; set; } = string.Empty;
