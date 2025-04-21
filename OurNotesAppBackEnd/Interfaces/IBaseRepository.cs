@@ -11,4 +11,6 @@ public interface IBaseRepository<T, K>
     Task EditEntity(T entity);
 
     Task DeleteEntity(T entity);
+    
+    Task<bool> DoesEntityExists(K id);
 }

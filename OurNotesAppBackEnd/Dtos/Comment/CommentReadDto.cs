@@ -10,5 +10,5 @@ public class CommentReadDto : BaseModel
 
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-    public int? ProductId { get; set; }
+    public Guid? ProductId { get; set; }
 }

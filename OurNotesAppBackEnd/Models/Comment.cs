@@ -8,7 +8,7 @@ public class Comment : BaseModel
 
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-    public int? ProductId { get; set; }
+    public Guid? ProductId { get; set; }
 
     public Product? Product { get; set; }
 }

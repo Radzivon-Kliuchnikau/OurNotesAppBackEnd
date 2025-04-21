@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OurNotesAppBackEnd.Data;
 using OurNotesAppBackEnd.Data.Repositories;
@@ -41,7 +42,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services
     .AddControllers()
-    .AddNewtonsoftJson(s => { s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver(); });
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -90,7 +95,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //     .AddRoles<IdentityRole>()
 //     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
 //     .AddDefaultTokenProviders();
-
 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

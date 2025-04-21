@@ -11,11 +11,13 @@ namespace OurNotesAppBackEnd.Controllers;
 public class CommentController : ControllerBase
 {
     private readonly ICommentRepository _commentRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
 
-    public CommentController(ICommentRepository commentRepository, IMapper mapper)
+    public CommentController(ICommentRepository commentRepository, IProductRepository productRepository, IMapper mapper)
     {
         _commentRepository = commentRepository;
+        _productRepository = productRepository;
         _mapper = mapper;
     }
 
@@ -36,17 +38,22 @@ public class CommentController : ControllerBase
         return Ok(_mapper.Map<CommentReadDto>(comment));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddComment([FromBody] CommentCreateDto commentCreateDto)
+    [HttpPost("{productId:guid}")]
+    public async Task<IActionResult> AddComment([FromRoute] Guid productId, [FromBody] CommentCreateDto commentCreateDto)
     {
+        if (!await _productRepository.DoesEntityExists(productId))
+        {
+            return BadRequest("Product does not exist");
+        }
+        
         var commentModel = _mapper.Map<Comment>(commentCreateDto);
+        commentModel.ProductId = productId;
         await _commentRepository.AddEntityAsync(commentModel);
 
-        return CreatedAtAction(nameof(GetCommentById), new { id = commentModel.Id },
-            _mapper.Map<CommentReadDto>(commentModel));
+        return CreatedAtAction(nameof(GetCommentById), new { id = commentModel.Id }, _mapper.Map<CommentReadDto>(commentModel));
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("{id}")]
     public async Task<IActionResult> UpdateComment([FromRoute] Guid id, [FromBody] CommentUpdateDto commentUpdateDto)
     {

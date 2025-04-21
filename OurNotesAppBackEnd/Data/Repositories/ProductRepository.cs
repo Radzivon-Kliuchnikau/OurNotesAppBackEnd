@@ -23,5 +23,4 @@ public class ProductRepository(ApplicationDbContext context) : BaseRepository<Pr
             .Include(p => p.Comments)
             .FirstOrDefaultAsync(n => EF.Property<int>(n, "Id").Equals(id));
     }
-    
 };

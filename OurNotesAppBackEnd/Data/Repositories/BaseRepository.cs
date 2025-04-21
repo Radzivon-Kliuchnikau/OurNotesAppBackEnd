@@ -48,4 +48,9 @@ public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where 
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> DoesEntityExists(K id)
+    {
+        return await _context.Set<T>().AnyAsync(e => EF.Property<K>(e, "Id").Equals(id));
+    }
 }
