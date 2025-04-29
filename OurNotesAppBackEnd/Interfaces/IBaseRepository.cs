@@ -1,6 +1,9 @@
+using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
+
 namespace OurNotesAppBackEnd.Interfaces;
 
-public interface IBaseRepository<T, K>
+public interface IBaseRepository<T, K> where T : BaseModel
 {
     Task<IEnumerable<T>> GetAllEntitiesAsync();
 
@@ -11,6 +14,4 @@ public interface IBaseRepository<T, K>
     Task EditEntity(T entity);
 
     Task DeleteEntity(T entity);
-    
-    Task<bool> DoesEntityExists(K id);
 }

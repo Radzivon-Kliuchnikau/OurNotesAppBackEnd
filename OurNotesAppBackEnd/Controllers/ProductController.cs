@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos.Product;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
 
 namespace OurNotesAppBackEnd.Controllers;
 
@@ -20,16 +21,16 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllProducts()
+    public async Task<ActionResult<ProductReadDto>> GetAllProducts([FromQuery] ProductQueryObject? productQuery)
     {
-        var products = await _productRepository.GetAllEntitiesAsync();
+        var products = await _productRepository.GetAllEntitiesAsync(productQuery);
 
         return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(products));
     }
 
     [HttpGet]
-    [Route("{id}")]
-    public async Task<IActionResult> GetProductById([FromRoute] Guid id)
+    [Route("{id:guid}")]
+    public async Task<ActionResult<ProductReadDto>> GetProductById([FromRoute] Guid id)
     {
         var product = await _productRepository.GetEntityByIdAsync(id);
 
@@ -42,7 +43,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddProduct([FromBody] ProductCreateDto productCreateDto)
+    public async Task<ActionResult<ProductReadDto>> AddProduct([FromBody] ProductCreateDto productCreateDto)
     {
         var productModel = _mapper.Map<Product>(productCreateDto);
         await _productRepository.AddEntityAsync(productModel);
@@ -51,7 +52,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{id}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, [FromBody] ProductUpdateDto productUpdateDto)
     {
         var productModel = await _productRepository.GetEntityByIdAsync(id);
@@ -68,7 +69,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("{id}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> RemoveProduct([FromRoute] Guid id)
     {
         var product = await _productRepository.GetEntityByIdAsync(id);

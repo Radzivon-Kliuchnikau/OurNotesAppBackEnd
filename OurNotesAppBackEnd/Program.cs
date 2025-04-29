@@ -20,25 +20,8 @@ builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
     loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
 });
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: "OurNotesFrontEnd",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
-});
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.Name = ".AspNetCore.OurNotes.Identity";
-});
+builder.Services.AddGeneralCors();
+builder.Services.ConfigureCookie();
 
 builder.Services
     .AddControllers()
@@ -124,7 +107,7 @@ if (app.Environment.IsDevelopment())
 // app.MapIdentityApi<AppUser>();
 
 app.UseHttpsRedirection();
-app.UseCors("OurNotesFrontEnd");
+app.UseCors("OurNotesFrontEnd"); // TODO: Specify CORS settings here
 
 // app.UseAuthentication();
 app.UseAuthorization();

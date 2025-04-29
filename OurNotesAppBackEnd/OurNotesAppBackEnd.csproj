@@ -36,9 +36,5 @@
     <ItemGroup>
         <InternalsVisibleTo Include="OurNotesAppBackEnd.Tests.Integration" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
 
 </Project>

@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using OurNotesAppBackEnd.Interfaces;
+using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
 
 namespace OurNotesAppBackEnd.Data.Repositories;
 
-public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where K : notnull
+public class BaseRepository<T, K> : IBaseRepository<T, K> where T : BaseModel
 {
     private readonly ApplicationDbContext _context;
 
@@ -47,10 +49,5 @@ public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where 
         Console.WriteLine(_context.ChangeTracker.DebugView.LongView);
 
         await _context.SaveChangesAsync();
-    }
-
-    public async Task<bool> DoesEntityExists(K id)
-    {
-        return await _context.Set<T>().AnyAsync(e => EF.Property<K>(e, "Id").Equals(id));
     }
 }

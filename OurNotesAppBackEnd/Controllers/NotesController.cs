@@ -74,7 +74,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult> PartialNoteUpdate([FromRoute] Guid id, JsonPatchDocument<NoteUpdateDto> patchDocument)
+    public async Task<IActionResult> PartialNoteUpdate([FromRoute] Guid id, JsonPatchDocument<NoteUpdateDto> patchDocument)
     {
         var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)

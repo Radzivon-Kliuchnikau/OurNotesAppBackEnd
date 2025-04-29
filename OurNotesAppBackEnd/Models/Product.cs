@@ -10,7 +10,7 @@ public class Product : BaseModel
 
     public string Url { get; set; } = string.Empty;
 
-    public string Image { get; set; } = string.Empty;
+    public string ImageUrl { get; set; } = string.Empty;
 
     [Column(TypeName = "decimal(18, 2)")]
     public decimal RawPrice { get; set; }

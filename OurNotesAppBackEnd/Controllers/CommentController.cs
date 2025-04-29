@@ -10,7 +10,7 @@ namespace OurNotesAppBackEnd.Controllers;
 [ApiController]
 public class CommentController : ControllerBase
 {
-    private readonly ICommentRepository _commentRepository;
+    private readonly IBaseRepository<Comment, Guid> _commentRepository;
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
 
@@ -22,26 +22,27 @@ public class CommentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllComments()
+    public async Task<ActionResult<IEnumerable<CommentReadDto>>> GetAllComments()
     {
         var comments = await _commentRepository.GetAllEntitiesAsync();
 
         return Ok(_mapper.Map<IEnumerable<CommentReadDto>>(comments));
     }
 
-    [HttpGet()]
-    [Route("{id}")]
-    public async Task<IActionResult> GetCommentById([FromRoute] Guid id)
+    [HttpGet]
+    [Route("{id:guid}")]
+    public async Task<ActionResult<CommentReadDto>> GetCommentById([FromRoute] Guid id)
     {
         var comment = await _commentRepository.GetEntityByIdAsync(id);
 
         return Ok(_mapper.Map<CommentReadDto>(comment));
     }
 
-    [HttpPost("{productId:guid}")]
-    public async Task<IActionResult> AddComment([FromRoute] Guid productId, [FromBody] CommentCreateDto commentCreateDto)
+    [HttpPost]
+    [Route("{productId:guid}")]
+    public async Task<ActionResult<CommentReadDto>> AddComment([FromRoute] Guid productId, [FromBody] CommentCreateDto commentCreateDto)
     {
-        if (!await _productRepository.DoesEntityExists(productId))
+        if (await _productRepository.GetEntityByIdAsync(productId) == null)
         {
             return BadRequest("Product does not exist");
         }
@@ -54,7 +55,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{id}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> UpdateComment([FromRoute] Guid id, [FromBody] CommentUpdateDto commentUpdateDto)
     {
         var commentModel = await _commentRepository.GetEntityByIdAsync(id);
@@ -71,7 +72,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpDelete]
-    [Route("{id}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> RemoveComment([FromRoute] Guid id)
     {
         var comment = await _commentRepository.GetEntityByIdAsync(id);
