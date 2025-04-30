@@ -10,7 +10,7 @@ namespace OurNotesAppBackEnd.Controllers;
 [ApiController]
 public class CommentController : ControllerBase
 {
-    private readonly IBaseRepository<Comment, Guid> _commentRepository;
+    private readonly ICommentRepository _commentRepository;
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
 
