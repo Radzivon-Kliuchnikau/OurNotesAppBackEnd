@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OurNotesAppBackEnd.Dtos;
+namespace OurNotesAppBackEnd.Dtos.Note;
 
 public class NoteCreateDto
 {

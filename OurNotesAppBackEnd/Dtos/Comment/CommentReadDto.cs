@@ -1,6 +1,8 @@
-namespace OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Models;
 
-public class Comment : BaseModel
+namespace OurNotesAppBackEnd.Dtos.Comment;
+
+public class CommentReadDto : BaseModel
 {
     public string Title { get; set; } = string.Empty;
 
@@ -9,6 +11,4 @@ public class Comment : BaseModel
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     public Guid? ProductId { get; set; }
-
-    public Product? Product { get; set; }
 }

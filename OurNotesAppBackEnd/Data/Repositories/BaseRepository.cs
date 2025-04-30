@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
 
-namespace OurNotesAppBackEnd.Data.Repository;
+namespace OurNotesAppBackEnd.Data.Repositories;
 
-public class BaseRepository<T, K> : IBaseRepository<T, K> where T : class where K : notnull
+public class BaseRepository<T, K> : IBaseRepository<T, K> where T : BaseModel
 {
     private readonly ApplicationDbContext _context;
 

@@ -1,12 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
+using OurNotesAppBackEnd.Models;
 
-namespace OurNotesAppBackEnd.Dtos;
+namespace OurNotesAppBackEnd.Dtos.Note;
 
-public class NoteReadDto
+public class NoteReadDto : BaseModel
 {
-    public string Id { get; set; }
-
     public string Title { get; set; }
 
     public string Content { get; set; }

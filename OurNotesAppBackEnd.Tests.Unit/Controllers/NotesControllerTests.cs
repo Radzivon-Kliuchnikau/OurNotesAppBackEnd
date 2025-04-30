@@ -5,16 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OurNotesAppBackEnd.Controllers;
 using OurNotesAppBackEnd.Dtos;
+using OurNotesAppBackEnd.Dtos.Note;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 using OurNotesAppBackEnd.Profiles;
-using OurNotesAppBackEnd.Services;
 using Xunit.Abstractions;
 
 namespace OurNotesAppBackEndTests.Controllers;
 
 public class NotesControllerTests
 {
-    private INotesService _noteService;
+    private INoteRepository _noteRepository;
     private IMapper _mapper;
     private ILogger<NotesController> _logger;
     private NotesController _noteController;
@@ -27,10 +28,10 @@ public class NotesControllerTests
         {
             config.AddProfile<NotesProfile>();
         });
-        _noteService = A.Fake<INotesService>();
+        _noteRepository = A.Fake<INoteRepository>();
         _mapper = config.CreateMapper();
         _logger = A.Fake<ILogger<NotesController>>();
-        _noteController = new NotesController(_noteService, _mapper, _logger);
+        _noteController = new NotesController(_noteRepository, _mapper, _logger);
     }
     
     [Fact]
@@ -41,7 +42,7 @@ public class NotesControllerTests
         var fakeNotes = A.CollectionOfDummy<Note>(notesCount).AsEnumerable();
         var expectedDtos = _mapper.Map<List<NoteReadDto>>(fakeNotes);
         
-        A.CallTo(() => _noteService.GetAllNotes()).Returns(Task.FromResult(fakeNotes));
+        A.CallTo(() => _noteRepository.GetAllEntitiesAsync()).Returns(Task.FromResult(fakeNotes));
 
         //Act
         var result = await _noteController.GetAllNotes();
@@ -60,12 +61,12 @@ public class NotesControllerTests
     public async Task NotesController_GetNoteById_Return_The_Correct_Note_By_Provided_Id()
     {
         //Arrange
-        var idValue = "B144F85A-2D45-448E-8949-E585BE051F14";
+        var idValue = new Guid("B144F85A-2D45-448E-8949-E585BE051F14");
         var fakeNote = A.Fake<Note>();
         fakeNote.Id = idValue;
         var expectedDtoNote = _mapper.Map<NoteReadDto>(fakeNote);
         
-        A.CallTo(() => _noteService.GetNoteById(idValue)).Returns(Task.FromResult<Note?>(fakeNote));
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(idValue)).Returns(Task.FromResult<Note?>(fakeNote));
         
         //Act
         var result = await _noteController.GetNoteById(idValue);
@@ -83,8 +84,8 @@ public class NotesControllerTests
     public async Task NotesController_GetNoteById_Return_The_Not_Found()
     {
         //Arrange
-        var unknownId = "fakeId";
-        A.CallTo(() => _noteService.GetNoteById(unknownId)).Returns(Task.FromResult<Note?>(null));
+        var unknownId = new Guid();
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(unknownId)).Returns(Task.FromResult<Note?>(null));
 
         //Act
         var result = await _noteController.GetNoteById(unknownId);
@@ -97,12 +98,12 @@ public class NotesControllerTests
     public async Task NotesController_CreateNote_Return_CreatedAtRoute_New_Note()
     {
         //Arrange
-        var generatedNoteId = "generated_note_id";
+        var generatedNoteId = new Guid();
         var fakeNoteCreateDto = A.Fake<NoteCreateDto>();
         var expectedNoteDto = A.Fake<NoteReadDto>();
         expectedNoteDto.Id = generatedNoteId;
 
-        A.CallTo(() => _noteService.AddNote(A<Note>.Ignored))
+        A.CallTo(() => _noteRepository.AddEntityAsync(A<Note>.Ignored))
             .Invokes((Note n) => n.Id = generatedNoteId)
             .Returns(Task.CompletedTask);
         
@@ -121,67 +122,67 @@ public class NotesControllerTests
     public async Task NotesController_UpdateNote_Return_NoContent_After_Note_Updating()
     {
         //Arrange
-        var updatedNoteId = "updated_note_id";
+        var updatedNoteId = new Guid();
         var fakeUpdateDto = A.Fake<NoteUpdateDto>();
         var fakeNote = A.Fake<Note>();
         fakeNote.Id = updatedNoteId;
 
-        A.CallTo(() => _noteService.GetNoteById(updatedNoteId)).Returns(Task.FromResult<Note?>(fakeNote));
-        A.CallTo(() => _noteService.EditNote(fakeNote)).DoesNothing();
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(updatedNoteId)).Returns(Task.FromResult<Note?>(fakeNote));
+        A.CallTo(() => _noteRepository.EditEntity(fakeNote)).DoesNothing();
 
         //Act
         var result = await _noteController.UpdateNote(updatedNoteId, fakeUpdateDto);
         
         //Assert
         result.Should().BeOfType<NoContentResult>();
-        A.CallTo(() => _noteService.EditNote(fakeNote)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _noteRepository.EditEntity(fakeNote)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
     public async Task NotesController_UpdateNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
     {
         //Arrange
-        var nonExistingNoteId = "non_existing_note_id";
+        var nonExistingNoteId = new Guid();
         var fakeUpdateDto = A.Fake<NoteUpdateDto>();
-        A.CallTo(() => _noteService.GetNoteById(nonExistingNoteId)).Returns(Task.FromResult<Note?>(null));
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(nonExistingNoteId)).Returns(Task.FromResult<Note?>(null));
 
         //Act
         var result = await _noteController.UpdateNote(nonExistingNoteId, fakeUpdateDto);
         
         //Assert
         result.Should().BeOfType<NotFoundResult>();
-        A.CallTo(() => _noteService.EditNote(A<Note>.Ignored)).MustNotHaveHappened();
+        A.CallTo(() => _noteRepository.EditEntity(A<Note>.Ignored)).MustNotHaveHappened();
     }
 
     [Fact]
     public async Task NotesController_DeleteNote_Return_NoContent_After_Note_Deleted()
     {
         //Arrange
-        var deletedNoteId = "deleted_note_id";
+        var deletedNoteId = new Guid();
         var fakeNote = A.Fake<Note>();
-        A.CallTo(() => _noteService.GetNoteById(deletedNoteId)).Returns(Task.FromResult<Note?>(fakeNote));
-        A.CallTo(() => _noteService.DeleteNote(fakeNote)).DoesNothing();
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(deletedNoteId)).Returns(Task.FromResult<Note?>(fakeNote));
+        A.CallTo(() => _noteRepository.DeleteEntity(fakeNote)).DoesNothing();
 
         //Act
         var result = await _noteController.DeleteNote(deletedNoteId);
 
         //Assert
         result.Should().BeOfType<NoContentResult>();
-        A.CallTo(() => _noteService.DeleteNote(fakeNote)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _noteRepository.DeleteEntity(fakeNote)).MustHaveHappenedOnceExactly();
     }
 
     [Fact]
     public async Task NotesController_DeleteNote_Return_NotFound_When_Non_Existing_Note_Id_Provided()
     {
         //Arrange
-        var nonExistingId = "non_existing_id";
-        A.CallTo(() => _noteService.GetNoteById(nonExistingId)).Returns(Task.FromResult<Note?>(null));
+        var nonExistingId = new Guid();
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(nonExistingId)).Returns(Task.FromResult<Note?>(null));
 
         //Act
         var result = await _noteController.DeleteNote(nonExistingId);
 
         //Assert
         result.Should().BeOfType<NotFoundResult>();
-        A.CallTo(() => _noteService.DeleteNote(A<Note>.Ignored)).MustNotHaveHappened();
+        A.CallTo(() => _noteRepository.DeleteEntity(A<Note>.Ignored)).MustNotHaveHappened();
     }
 }

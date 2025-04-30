@@ -1,8 +1,9 @@
-using System.ComponentModel.DataAnnotations.Schema;
+using OurNotesAppBackEnd.Dtos.Comment;
+using OurNotesAppBackEnd.Models;
 
-namespace OurNotesAppBackEnd.Models;
+namespace OurNotesAppBackEnd.Dtos.Product;
 
-public class Product : BaseModel
+public class ProductReadDto : BaseModel
 {
     public string Name { get; set; } = string.Empty;
 
@@ -12,8 +13,7 @@ public class Product : BaseModel
 
     public string ImageUrl { get; set; } = string.Empty;
 
-    [Column(TypeName = "decimal(18, 2)")]
     public decimal RawPrice { get; set; }
-
-    public List<Comment> Comments { get; set; } = [];
+    
+    public List<CommentReadDto> Comments { get; set; } = [];
 }

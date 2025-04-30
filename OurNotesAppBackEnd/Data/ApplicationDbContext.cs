@@ -15,10 +15,14 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Comment> Comments { get; init; }
 
-    // protected override void OnModelCreating(ModelBuilder modelBuilder)
-    // {
-    //     base.OnModelCreating(modelBuilder);
-    //
-    //     modelBuilder.Entity<Note>();
-    // }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Comment>()
+            .HasOne(c => c.Product)
+            .WithMany(p => p.Comments)
+            .HasForeignKey(c => c.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

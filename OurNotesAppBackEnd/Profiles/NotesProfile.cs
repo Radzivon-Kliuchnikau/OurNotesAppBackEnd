@@ -1,5 +1,6 @@
 using AutoMapper;
 using OurNotesAppBackEnd.Dtos;
+using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Profiles;

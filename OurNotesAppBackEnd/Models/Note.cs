@@ -2,10 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OurNotesAppBackEnd.Models;
 
-public class Note
+public class Note : BaseModel
 {
-    [Key] public string Id { get; set; } = Guid.NewGuid().ToString();
-
     [Required]
     [MaxLength(255)]
     public string Title { get; set; }

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using OurNotesAppBackEnd.Dtos;
+using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Tests.Integration.Infrastructure;
 
 namespace OurNotesAppBackEnd.Tests.Integration;

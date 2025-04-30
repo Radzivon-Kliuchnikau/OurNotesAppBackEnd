@@ -1,6 +1,9 @@
-namespace OurNotesAppBackEnd.Data.Repository;
+using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
 
-public interface IBaseRepository<T, K>
+namespace OurNotesAppBackEnd.Interfaces;
+
+public interface IBaseRepository<T, K> where T : BaseModel
 {
     Task<IEnumerable<T>> GetAllEntitiesAsync();
 
