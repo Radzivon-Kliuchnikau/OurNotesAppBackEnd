@@ -10,7 +10,11 @@ public class CommentProfile : Profile
     {
         // Source -> Target
         CreateMap<Comment, CommentReadDto>();
-        CreateMap<CommentCreateDto, Comment>();
+        CreateMap<CommentCreateDto, Comment>()
+            .AfterMap((src, dest) =>
+            {
+                dest.CreatedOn = DateTime.UtcNow;
+            });
         CreateMap<CommentUpdateDto, Comment>();
     }
 }

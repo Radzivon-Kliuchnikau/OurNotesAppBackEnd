@@ -1,8 +1,12 @@
 using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OurNotesAppBackEnd.Dtos.Account;
 using OurNotesAppBackEnd.Identity;
+using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Controllers;
@@ -13,41 +17,73 @@ public class AccountController : ControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signinManager;
+    private readonly ITokenService _tokenService;
+    private readonly IMapper _mapper;
 
-    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signinManager)
+    public AccountController(
+        UserManager<AppUser> userManager, SignInManager<AppUser> signinManager, ITokenService tokenService,
+        IMapper mapper)
     {
         _userManager = userManager;
         _signinManager = signinManager;
+        _tokenService = tokenService;
+        _mapper = mapper;
     }
 
-    [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
+    public async Task<IActionResult> Register([FromBody] RegistrationModelDto registrationModelDto)
     {
-        if (!ModelState.IsValid)
+        var user = _mapper.Map<AppUser>(registrationModelDto);
+        var alreadyExistedUser =
+            await _userManager.Users.FirstOrDefaultAsync(u => u.Email == registrationModelDto.Email.ToLower());
+        if (alreadyExistedUser != null)
         {
-            return BadRequest(ModelState);
+            return BadRequest("User already exists");
         }
 
-        var user = new AppUser()
+        var createdUserResult = await _userManager.CreateAsync(user, registrationModelDto.Password);
+        if (!createdUserResult.Succeeded)
         {
-            Email = registerModel.Email,
-            UserName = registerModel.UserName
+            var errors = createdUserResult.Errors.Select(e => e.Description);
+
+            return BadRequest(new RegistrationResponseDto { Errors = errors });
+        }
+
+        var roleResult = await _userManager.AddToRoleAsync(user, "User");
+        if (!roleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(user);
+            var roleErrors = createdUserResult.Errors.Select(e => e.Description);
+
+            return BadRequest(new RegistrationResponseDto { Errors = roleErrors });
+        }
+
+        return Created();
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == loginRequestDto.Email.ToLower());
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _signinManager.CheckPasswordSignInAsync(user, loginRequestDto.Password, false);
+        if (!result.Succeeded)
+        {
+            return Unauthorized();
+        }
+
+        var loggedInUser = new LoginResponseDto
+        {
+            UserName = user.UserName,
+            Email = user.Email,
+            Token = _tokenService.CreateToken(user)
         };
 
-        var result = await _userManager.CreateAsync(user, registerModel.Password);
-
-        if (result.Succeeded)
-        {
-            return Ok("User registered successfully");
-        }
-
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(error.Code, error.Description);
-        }
-
-        return BadRequest(ModelState);
+        return Ok(loggedInUser);
     }
 
     [Authorize]

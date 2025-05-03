@@ -1,16 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OurNotesAppBackEnd.Data;
-using OurNotesAppBackEnd.Data.Repositories;
 using OurNotesAppBackEnd.Extensions;
-using OurNotesAppBackEnd.Identity;
-using OurNotesAppBackEnd.Interfaces;
-using OurNotesAppBackEnd.Models;
-using OurNotesAppBackEnd.Utils;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,63 +28,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
 });
 
-// builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-// {
-//     options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
-// });
-
-// builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-//     {
-//         options.Password.RequireDigit = true;
-//         options.Password.RequireLowercase = true;
-//         options.Password.RequireUppercase = true;
-//         options.Password.RequireNonAlphanumeric = true;
-//         options.Password.RequiredLength = 12;
-//     })
-//     .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
-
-// builder.Services.AddAuthentication(options =>
-// {
-//     options.DefaultAuthenticateScheme =
-//         options.DefaultChallengeScheme =
-//             options.DefaultForbidScheme =
-//                 options.DefaultScheme =
-//                     options.DefaultSignInScheme =
-//                         options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-// }).AddJwtBearer(options =>
-// {
-//     options.TokenValidationParameters = new TokenValidationParameters
-//     {
-//         ValidateIssuer = true,
-//         ValidIssuer = builder.Configuration["JWT:Issuer"],
-//         ValidateAudience = true,
-//         ValidAudience = builder.Configuration["JWT:Audience"],
-//         ValidateIssuerSigningKey = true,
-//         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]))
-//     };
-// });
-
-// builder.Services.AddAuthorization();
-
-// builder.Services.AddIdentityApiEndpoints<AppUser>()
-//     .AddRoles<IdentityRole>()
-//     .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-//     .AddDefaultTokenProviders();
-
+builder.Services.AddIdentityConfiguration();
+builder.Services.AddAuthenticationWithJwtBearer(builder.Configuration);
+builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfiguration();
 
-builder.Services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
-builder.Services.AddScoped<INoteRepository, NoteRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddDependencyServices();
 
 var app = builder.Build();
-
-// app.ApplyMigration();
 
 app.UseSerilogRequestLogging();
 
@@ -104,21 +51,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.MapIdentityApi<AppUser>();
-
 app.UseHttpsRedirection();
 app.UseCors("OurNotesFrontEnd"); // TODO: Specify CORS settings here
 
-// app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// using (var scope = app.Services.CreateScope())
-// {
-//     var serviceProvider = scope.ServiceProvider;
-//     await SeedDefaultData.CreateDefaultRoles(serviceProvider);
-//     await SeedDefaultData.CreateDefaultAdminUser(serviceProvider, builder.Configuration);
-// }
 
 app.Run();
