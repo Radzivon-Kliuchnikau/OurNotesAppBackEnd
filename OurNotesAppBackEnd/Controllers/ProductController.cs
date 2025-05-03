@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos.Product;
 using OurNotesAppBackEnd.Interfaces;
@@ -7,6 +8,7 @@ using OurNotesAppBackEnd.Utils;
 
 namespace OurNotesAppBackEnd.Controllers;
 
+[Authorize]
 [Route("api/product")]
 [ApiController]
 public class ProductController : ControllerBase

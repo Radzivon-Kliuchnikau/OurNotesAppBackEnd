@@ -6,7 +6,7 @@ public class Comment : BaseModel
 
     public string Content { get; set; } = string.Empty;
 
-    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedOn { get; set; }
 
     public Guid? ProductId { get; set; }
 

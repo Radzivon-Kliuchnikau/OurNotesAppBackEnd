@@ -24,7 +24,7 @@ public class IntegrationTestWebApiFactory : WebApplicationFactory<IApiMarker>, I
             var descriptor =
                 services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             var identityDescriptor = services.SingleOrDefault(d =>
-                d.ServiceType == typeof(DbContextOptions<ApplicationIdentityDbContext>));
+                d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             if (descriptor != null && identityDescriptor != null)
             {
                 services.Remove(descriptor);
@@ -37,7 +37,7 @@ public class IntegrationTestWebApiFactory : WebApplicationFactory<IApiMarker>, I
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_testingSqlDb.GetConnectionString(),
                     sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(2), null)));
-            services.AddDbContext<ApplicationIdentityDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_testingSqlDb.GetConnectionString(),
                     sql => sql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(2), null)));
         });

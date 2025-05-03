@@ -1,6 +1,6 @@
 namespace OurNotesAppBackEnd.Models;
 
-public enum Roles
+public enum UserRoles
 {
     Admin,
     User

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos.Comment;
 using OurNotesAppBackEnd.Interfaces;
@@ -6,6 +7,7 @@ using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Controllers;
 
+[Authorize]
 [Route("api/comment")]
 [ApiController]
 public class CommentController : ControllerBase
