@@ -9,8 +9,8 @@ using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Controllers;
 
-[Authorize]
-[Route("api/[controller]")]
+// [Authorize]
+[Route("api/notes")]
 [ApiController]
 public class NotesController : ControllerBase
 {
@@ -59,7 +59,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
+    public async Task<ActionResult<NoteReadDto>> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
         var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)
@@ -70,7 +70,7 @@ public class NotesController : ControllerBase
         _mapper.Map(noteUpdateDto, noteForUpdateModel);
         await _noteRepository.EditEntity(noteForUpdateModel);
 
-        return NoContent();
+        return Ok(_mapper.Map<NoteReadDto>(noteForUpdateModel));
     }
 
     [HttpPatch("{id}")]
