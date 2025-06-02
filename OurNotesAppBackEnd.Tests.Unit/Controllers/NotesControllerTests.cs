@@ -126,15 +126,21 @@ public class NotesControllerTests
         var fakeUpdateDto = A.Fake<NoteUpdateDto>();
         var fakeNote = A.Fake<Note>();
         fakeNote.Id = updatedNoteId;
+        var expectedDtoNote = _mapper.Map<NoteReadDto>(fakeNote);
 
         A.CallTo(() => _noteRepository.GetEntityByIdAsync(updatedNoteId)).Returns(Task.FromResult<Note?>(fakeNote));
         A.CallTo(() => _noteRepository.EditEntity(fakeNote)).DoesNothing();
 
         //Act
         var result = await _noteController.UpdateNote(updatedNoteId, fakeUpdateDto);
+        var okResult = result.Result as OkObjectResult;
+        var returnedNote = okResult?.Value as NoteReadDto;
         
         //Assert
-        result.Should().BeOfType<NoContentResult>();
+        result.Should().BeOfType<ActionResult<NoteReadDto>?>();
+        okResult.Should().NotBeNull();
+        returnedNote.Should().NotBeNull();
+        returnedNote.Id.Should().Be(expectedDtoNote.Id);
         A.CallTo(() => _noteRepository.EditEntity(fakeNote)).MustHaveHappenedOnceExactly();
     }
 
@@ -150,7 +156,7 @@ public class NotesControllerTests
         var result = await _noteController.UpdateNote(nonExistingNoteId, fakeUpdateDto);
         
         //Assert
-        result.Should().BeOfType<NotFoundResult>();
+        result.Result.Should().BeOfType<NotFoundResult>();
         A.CallTo(() => _noteRepository.EditEntity(A<Note>.Ignored)).MustNotHaveHappened();
     }
 

@@ -59,7 +59,7 @@ public class NotesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
+    public async Task<ActionResult<NoteReadDto>> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
     {
         var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
         if (noteForUpdateModel == null)
