@@ -9,8 +9,8 @@ using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Controllers;
 
-[Authorize]
-[Route("api/[controller]")]
+// [Authorize]
+[Route("api/notes")]
 [ApiController]
 public class NotesController : ControllerBase
 {
@@ -70,7 +70,7 @@ public class NotesController : ControllerBase
         _mapper.Map(noteUpdateDto, noteForUpdateModel);
         await _noteRepository.EditEntity(noteForUpdateModel);
 
-        return NoContent();
+        return Ok(_mapper.Map<NoteReadDto>(noteForUpdateModel));
     }
 
     [HttpPatch("{id}")]

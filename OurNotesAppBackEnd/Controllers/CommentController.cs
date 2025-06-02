@@ -24,7 +24,7 @@ public class CommentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CommentReadDto>>> GetAllComments()
+    public async Task<ActionResult<IEnumerable<CommentReadDto>>> GetAllComments() // TODO: Add query to gt comments for specific product
     {
         var comments = await _commentRepository.GetAllEntitiesAsync();
 
