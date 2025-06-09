@@ -1,4 +1,4 @@
-using OurNotesAppBackEnd.Identity;
+using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Interfaces;
 

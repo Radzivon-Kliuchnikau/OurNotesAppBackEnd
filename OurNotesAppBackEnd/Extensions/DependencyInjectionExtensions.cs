@@ -13,6 +13,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IGrantAccessToNoteService, GrantAccessToNoteService>();
 
         return services;
     } 

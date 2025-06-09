@@ -25,7 +25,7 @@ builder.Services
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:OurNotesConnection"]);
+    options.UseNpgsql(builder.Configuration["PostgressConnectionString"]);
 });
 
 builder.Services.AddIdentityConfiguration();

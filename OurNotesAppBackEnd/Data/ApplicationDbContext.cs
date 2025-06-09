@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Data;
@@ -14,6 +13,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     
     public DbSet<Note> Notes { get; init; }
 
+    public DbSet<NoteAccesses> NoteAccesses { get; set; }
+
     public DbSet<Product> Products { get; init; }
 
     public DbSet<Comment> Comments { get; init; }
@@ -22,6 +23,27 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(modelBuilder);
 
+
+        modelBuilder.Entity<Note>()
+            .HasOne(n => n.AppUser)
+            .WithMany(a => a.Notes)
+            .HasForeignKey(n => n.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<NoteAccesses>()
+            .HasKey(na => new { na.NoteId, na.AppUserId });
+        
+        modelBuilder.Entity<NoteAccesses>()
+            .HasOne(na => na.Note)
+            .WithMany(n => n.NoteAccesses)
+            .HasForeignKey(na => na.NoteId);
+        
+        modelBuilder.Entity<NoteAccesses>()
+            .HasOne(na => na.AppUser)
+            .WithMany(a => a.NoteAccesses)
+            .HasForeignKey(na => na.AppUserId);
+        
+        
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.Product)
             .WithMany(p => p.Comments)

@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Interfaces;
+using OurNotesAppBackEnd.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace OurNotesAppBackEnd.Services;

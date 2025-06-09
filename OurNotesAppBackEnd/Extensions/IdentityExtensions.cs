@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using OurNotesAppBackEnd.Data;
-using OurNotesAppBackEnd.Identity;
+using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Extensions;
 

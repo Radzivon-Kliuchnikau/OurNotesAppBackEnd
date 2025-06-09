@@ -1,15 +1,15 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 
 namespace OurNotesAppBackEnd.Controllers;
 
-// [Authorize]
+[Authorize]
 [Route("api/notes")]
 [ApiController]
 public class NotesController : ControllerBase
@@ -17,19 +17,26 @@ public class NotesController : ControllerBase
     private readonly INoteRepository _noteRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NotesController> _logger;
+    private readonly IGrantAccessToNoteService _grantAccessToNoteService;
 
-    public NotesController(INoteRepository noteRepository, IMapper mapper, ILogger<NotesController> logger)
+    public NotesController(
+        INoteRepository noteRepository, 
+        IMapper mapper, 
+        ILogger<NotesController> logger,
+        IGrantAccessToNoteService grantAccessToNoteService)
     {
         _noteRepository = noteRepository;
         _mapper = mapper;
         _logger = logger;
+        _grantAccessToNoteService = grantAccessToNoteService;
     }
     
     [HttpGet]
     public async Task<ActionResult<IEnumerable<NoteReadDto>>> GetAllNotes()
     {
         _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
-        var notes = await _noteRepository.GetAllEntitiesAsync();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var notes = await _noteRepository.GetNotesUserHaveAccessTo(userId);
         
         return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
     }
@@ -50,13 +57,26 @@ public class NotesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<NoteReadDto>> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var noteModel = _mapper.Map<Note>(noteCreateDto);
+        noteModel.AppUserId = Guid.Parse(userId);
+        
         await _noteRepository.AddEntityAsync(noteModel);
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(noteModel, noteCreateDto.UsersWithGrantedAccess);
 
         var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
         
-        return CreatedAtRoute("GetNoteById", new { id = noteReadDto.Id.ToString()}, noteReadDto);
+        return CreatedAtRoute(nameof(GetNoteById), new { id = noteReadDto.Id.ToString()}, noteReadDto);
     }
+    
+    // [HttpPost]
+    // public async Task<ActionResult> GrantAccessToNote([FromBody] NoteAccessCreateDto noteAccessCreateDto)
+    // {
+    //     var noteAccessModel = _mapper.Map<NoteAccesses>(noteAccessCreateDto);
+    //     await _noteRepository.AddNoteAccessAsync(noteAccessModel);
+    //
+    //     return CreatedAtRoute("GetNoteById", new { id = noteAccessModel.NoteId.ToString() }, null);
+    // }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<NoteReadDto>> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
