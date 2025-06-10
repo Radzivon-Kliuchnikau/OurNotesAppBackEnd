@@ -9,7 +9,7 @@ public class NoteReadDto : BaseModel
 
     public string Content { get; set; } = string.Empty;
     
-    public AuthorReadDto Author { get; set; }
+    public AuthorReadDto AuthorReadDto { get; set; }
     
     public DateTime CreatedAt { get; set; }
 

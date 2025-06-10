@@ -13,7 +13,7 @@ public class NotesProfile : Profile
         // Source -> Target
         CreateMap<AppUser, AuthorReadDto>();
         CreateMap<Note, NoteReadDto>()
-            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.AppUser));
+            .ForMember(dest => dest.AuthorReadDto, opt => opt.MapFrom(src => src.AppUser));
         CreateMap<NoteCreateDto, Note>()
             .ForMember(dest => dest.NoteAccesses, opt => opt.Ignore())
             .AfterMap((src, dest) =>

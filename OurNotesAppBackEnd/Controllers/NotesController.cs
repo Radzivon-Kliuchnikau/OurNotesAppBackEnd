@@ -58,8 +58,13 @@ public class NotesController : ControllerBase
     public async Task<ActionResult<NoteReadDto>> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized("There is no user associated with this request.");
+        }
+        
         var noteModel = _mapper.Map<Note>(noteCreateDto);
-        noteModel.AppUserId = Guid.Parse(userId);
+        noteModel.AppUserId = userId;
         
         await _noteRepository.AddEntityAsync(noteModel);
         await _grantAccessToNoteService.GrantAccessToNoteAsync(noteModel, noteCreateDto.UsersWithGrantedAccess);

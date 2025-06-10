@@ -4,7 +4,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OurNotesAppBackEnd.Controllers;
-using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
@@ -19,6 +18,7 @@ public class NotesControllerTests
     private IMapper _mapper;
     private ILogger<NotesController> _logger;
     private NotesController _noteController;
+    private IGrantAccessToNoteService _grantAccessToNoteService;
     private readonly ITestOutputHelper _output;
     
     public NotesControllerTests(ITestOutputHelper output)
@@ -31,7 +31,8 @@ public class NotesControllerTests
         _noteRepository = A.Fake<INoteRepository>();
         _mapper = config.CreateMapper();
         _logger = A.Fake<ILogger<NotesController>>();
-        _noteController = new NotesController(_noteRepository, _mapper, _logger);
+        _grantAccessToNoteService = A.Fake<IGrantAccessToNoteService>();
+        _noteController = new NotesController(_noteRepository, _mapper, _logger, _grantAccessToNoteService);
     }
     
     [Fact]

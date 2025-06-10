@@ -10,8 +10,8 @@ public class NoteRepository(ApplicationDbContext context) : BaseRepository<Note,
     {
         return await context.Notes
             .Include(n => n.NoteAccesses)
-            .Where(n => n.AppUserId.ToString() == authorId || n.NoteAccesses.Any(na => na.AppUserId.ToString() == authorId))
-            .Where(note => note.AppUserId.ToString() == authorId)
+            .Where(n => n.AppUserId == authorId || n.NoteAccesses.Any(na => na.AppUserId == authorId))
+            .Where(note => note.AppUserId == authorId)
             .ToListAsync();
     }
 }

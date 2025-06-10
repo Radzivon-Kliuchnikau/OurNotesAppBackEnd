@@ -15,11 +15,11 @@ public class GrantAccessToNoteService(ApplicationDbContext context) : IGrantAcce
         
         foreach (var user in users)
         {
-            if (Guid.Parse(user.Id) == note.AppUserId) continue;
+            if (user.Id == note.AppUserId) continue;
             
             var noteAccess = new NoteAccesses
             {
-                AppUserId = Guid.Parse(user.Id),
+                AppUserId = user.Id,
                 NoteId = note.Id
             };
             
