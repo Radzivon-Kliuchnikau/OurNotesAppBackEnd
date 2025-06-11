@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Interfaces;
@@ -79,14 +78,19 @@ public class NotesController : ControllerBase
         return CreatedAtRoute(nameof(GetNoteById), new { id = noteReadDto.Id.ToString()}, noteReadDto);
     }
     
-    // [HttpPost]
-    // public async Task<ActionResult> GrantAccessToNote([FromBody] NoteAccessCreateDto noteAccessCreateDto)
-    // {
-    //     var noteAccessModel = _mapper.Map<NoteAccesses>(noteAccessCreateDto);
-    //     await _noteRepository.AddNoteAccessAsync(noteAccessModel);
-    //
-    //     return CreatedAtRoute("GetNoteById", new { id = noteAccessModel.NoteId.ToString() }, null);
-    // }
+    [HttpPost("{noteId}/grant-access")]
+    public async Task<ActionResult> GrantAccessToNote([FromRoute] string noteId, [FromBody] string[] listOfUsersToGrantAccessTo)
+    {
+        var note = await _noteRepository.GetEntityByIdAsync(Guid.Parse(noteId));
+        if (note == null)
+        {
+            return NotFound("Note not found.");
+        }
+        
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(note, listOfUsersToGrantAccessTo);
+
+        return Ok("Access granted successfully.");
+    }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<NoteReadDto>> UpdateNote([FromRoute] Guid id, [FromBody] NoteUpdateDto noteUpdateDto)
