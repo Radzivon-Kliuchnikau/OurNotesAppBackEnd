@@ -9,5 +9,5 @@ public class NoteCreateDto
 
     public string? Content { get; set; }
 
-    public ICollection<string> UsersWithGrantedAccess { get; set; } = new List<string>();
+    public ICollection<string> UsersEmailsWithGrantedAccess { get; set; } = new List<string>();
 }

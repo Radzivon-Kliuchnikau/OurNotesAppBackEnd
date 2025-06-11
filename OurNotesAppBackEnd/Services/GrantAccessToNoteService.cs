@@ -13,6 +13,8 @@ public class GrantAccessToNoteService(ApplicationDbContext context) : IGrantAcce
             .Where(u => emails != null && emails.Contains(u.Email))
             .ToListAsync();
         
+        await context.Entry(note).Reference(n => n.AppUser).LoadAsync();
+        
         foreach (var user in users)
         {
             if (user.Id == note.AppUserId) continue;

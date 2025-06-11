@@ -36,6 +36,11 @@ public class NotesController : ControllerBase
     {
         _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized("There is no user associated with this request.");
+        }
+        
         var notes = await _noteRepository.GetNotesUserHaveAccessTo(userId);
         
         return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
@@ -67,7 +72,7 @@ public class NotesController : ControllerBase
         noteModel.AppUserId = userId;
         
         await _noteRepository.AddEntityAsync(noteModel);
-        await _grantAccessToNoteService.GrantAccessToNoteAsync(noteModel, noteCreateDto.UsersWithGrantedAccess);
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(noteModel, noteCreateDto.UsersEmailsWithGrantedAccess);
 
         var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
         
@@ -96,28 +101,6 @@ public class NotesController : ControllerBase
         await _noteRepository.EditEntity(noteForUpdateModel);
 
         return Ok(_mapper.Map<NoteReadDto>(noteForUpdateModel));
-    }
-
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> PartialNoteUpdate([FromRoute] Guid id, JsonPatchDocument<NoteUpdateDto> patchDocument)
-    {
-        var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
-        if (noteForUpdateModel == null)
-        {
-            return NotFound();
-        }
-
-        var noteToPatch = _mapper.Map<NoteUpdateDto>(noteForUpdateModel);
-        patchDocument.ApplyTo(noteToPatch, ModelState);
-        if (!TryValidateModel(noteToPatch))
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        _mapper.Map(noteToPatch, noteForUpdateModel);
-        await _noteRepository.EditEntity(noteForUpdateModel);
-
-        return NoContent();
     }
     
     [HttpDelete("{id}")]
