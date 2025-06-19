@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Interfaces;
+using OurNotesAppBackEnd.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace OurNotesAppBackEnd.Services;
@@ -23,8 +23,9 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email)
         };
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
         var tokenDescriptor = new SecurityTokenDescriptor

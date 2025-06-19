@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OurNotesAppBackEnd.Data;
-using OurNotesAppBackEnd.Identity;
 using Testcontainers.SqlEdge;
 
 namespace OurNotesAppBackEnd.Tests.Integration.Infrastructure;

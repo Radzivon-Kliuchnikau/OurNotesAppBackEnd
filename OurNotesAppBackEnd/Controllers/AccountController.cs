@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OurNotesAppBackEnd.Dtos.Account;
-using OurNotesAppBackEnd.Identity;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
 

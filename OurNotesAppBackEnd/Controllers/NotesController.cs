@@ -1,15 +1,15 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using OurNotesAppBackEnd.Dtos;
 using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
 
 namespace OurNotesAppBackEnd.Controllers;
 
-// [Authorize]
+[Authorize]
 [Route("api/notes")]
 [ApiController]
 public class NotesController : ControllerBase
@@ -17,19 +17,31 @@ public class NotesController : ControllerBase
     private readonly INoteRepository _noteRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<NotesController> _logger;
+    private readonly IGrantAccessToNoteService _grantAccessToNoteService;
 
-    public NotesController(INoteRepository noteRepository, IMapper mapper, ILogger<NotesController> logger)
+    public NotesController(
+        INoteRepository noteRepository, 
+        IMapper mapper, 
+        ILogger<NotesController> logger,
+        IGrantAccessToNoteService grantAccessToNoteService)
     {
         _noteRepository = noteRepository;
         _mapper = mapper;
         _logger = logger;
+        _grantAccessToNoteService = grantAccessToNoteService;
     }
     
     [HttpGet]
     public async Task<ActionResult<IEnumerable<NoteReadDto>>> GetAllNotes()
     {
         _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
-        var notes = await _noteRepository.GetAllEntitiesAsync();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized(ErrorMessages.UserIdNotFound);
+        }
+        
+        var notes = await _noteRepository.GetNotesUserHaveAccessTo(userId);
         
         return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
     }
@@ -50,12 +62,35 @@ public class NotesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<NoteReadDto>> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized(ErrorMessages.UserIdNotFound);
+        }
+        
         var noteModel = _mapper.Map<Note>(noteCreateDto);
+        noteModel.AppUserId = userId;
+        
         await _noteRepository.AddEntityAsync(noteModel);
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(noteModel, noteCreateDto.UsersEmailsWithGrantedAccess);
 
         var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
         
-        return CreatedAtRoute("GetNoteById", new { id = noteReadDto.Id.ToString()}, noteReadDto);
+        return CreatedAtRoute(nameof(GetNoteById), new { id = noteReadDto.Id.ToString()}, noteReadDto);
+    }
+    
+    [HttpPost("{noteId}/grant-access")]
+    public async Task<ActionResult> GrantAccessToNote([FromRoute] string noteId, [FromBody] string[] listOfUsersToGrantAccessTo)
+    {
+        var note = await _noteRepository.GetEntityByIdAsync(Guid.Parse(noteId));
+        if (note == null)
+        {
+            return NotFound(ErrorMessages.NoteNotFound);
+        }
+        
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(note, listOfUsersToGrantAccessTo); // TODO: Think about Error handling of this method
+
+        return Ok(ErrorMessages.AccessGrantedSuccessfully);
     }
 
     [HttpPut("{id}")]
@@ -71,28 +106,6 @@ public class NotesController : ControllerBase
         await _noteRepository.EditEntity(noteForUpdateModel);
 
         return Ok(_mapper.Map<NoteReadDto>(noteForUpdateModel));
-    }
-
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> PartialNoteUpdate([FromRoute] Guid id, JsonPatchDocument<NoteUpdateDto> patchDocument)
-    {
-        var noteForUpdateModel = await _noteRepository.GetEntityByIdAsync(id);
-        if (noteForUpdateModel == null)
-        {
-            return NotFound();
-        }
-
-        var noteToPatch = _mapper.Map<NoteUpdateDto>(noteForUpdateModel);
-        patchDocument.ApplyTo(noteToPatch, ModelState);
-        if (!TryValidateModel(noteToPatch))
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        _mapper.Map(noteToPatch, noteForUpdateModel);
-        await _noteRepository.EditEntity(noteForUpdateModel);
-
-        return NoContent();
     }
     
     [HttpDelete("{id}")]
