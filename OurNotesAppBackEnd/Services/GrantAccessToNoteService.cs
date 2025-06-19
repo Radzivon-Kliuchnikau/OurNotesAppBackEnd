@@ -7,7 +7,7 @@ namespace OurNotesAppBackEnd.Services;
 
 public class GrantAccessToNoteService(ApplicationDbContext context) : IGrantAccessToNoteService
 {
-    public async Task GrantAccessToNoteAsync(Note note, ICollection<string>? emails)
+    public async Task GrantAccessToNoteAsync(Note note, IEnumerable<string> emails)
     {
         var users = await context.Users
             .Where(u => emails != null && emails.Contains(u.Email))

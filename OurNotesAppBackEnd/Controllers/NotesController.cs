@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using OurNotesAppBackEnd.Dtos.Note;
 using OurNotesAppBackEnd.Interfaces;
 using OurNotesAppBackEnd.Models;
+using OurNotesAppBackEnd.Utils;
 
 namespace OurNotesAppBackEnd.Controllers;
 
@@ -37,7 +38,7 @@ public class NotesController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized("There is no user associated with this request.");
+            return Unauthorized(ErrorMessages.UserIdNotFound);
         }
         
         var notes = await _noteRepository.GetNotesUserHaveAccessTo(userId);
@@ -64,7 +65,7 @@ public class NotesController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized("There is no user associated with this request.");
+            return Unauthorized(ErrorMessages.UserIdNotFound);
         }
         
         var noteModel = _mapper.Map<Note>(noteCreateDto);
@@ -84,12 +85,12 @@ public class NotesController : ControllerBase
         var note = await _noteRepository.GetEntityByIdAsync(Guid.Parse(noteId));
         if (note == null)
         {
-            return NotFound("Note not found.");
+            return NotFound(ErrorMessages.NoteNotFound);
         }
         
-        await _grantAccessToNoteService.GrantAccessToNoteAsync(note, listOfUsersToGrantAccessTo);
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(note, listOfUsersToGrantAccessTo); // TODO: Think about Error handling of this method
 
-        return Ok("Access granted successfully.");
+        return Ok(ErrorMessages.AccessGrantedSuccessfully);
     }
 
     [HttpPut("{id}")]

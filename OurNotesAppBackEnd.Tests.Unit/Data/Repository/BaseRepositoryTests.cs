@@ -14,13 +14,14 @@ public class BaseRepositoryTests
 
     public BaseRepositoryTests()
     {
-        _note = new Note()
+        _note = new Note
         {
             Id = _noteId,
             Title = "Some note title",
             Content = "Some note important content",
             CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            UpdatedAt = DateTime.UtcNow,
+            AppUserId = Guid.NewGuid().ToString()
         };
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -40,7 +41,8 @@ public class BaseRepositoryTests
                 Title = "Some note title",
                 Content = "Some note important content",
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                AppUserId = Guid.NewGuid().ToString()
             });
         }
 
