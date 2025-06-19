@@ -85,7 +85,7 @@ public class NotesControllerTests
         //Assert
         unauthorizedResult.Should().NotBeNull();
         unauthorizedResult.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
-        unauthorizedResult.Value.Should().Be(ErrorMessages.UserIdNotFound);
+        unauthorizedResult.Value.Should().Be(ResultMessages.UserIdNotFound);
         A.CallTo(() => _noteRepository.GetNotesUserHaveAccessTo(A<string>.Ignored)).MustNotHaveHappened();
         A.CallTo(() => _mapper.Map<IEnumerable<NoteReadDto>>(A<IEnumerable<Note>>.Ignored)).MustNotHaveHappened();
         _output.WriteLine("Endpoint returned UnauthorizedObjectResult as expected when UserId is null");
@@ -194,7 +194,7 @@ public class NotesControllerTests
         //Assert
         result.Should().BeOfType<OkObjectResult>();
         var okResult = result as OkObjectResult;
-        okResult?.Value.Should().Be(ErrorMessages.AccessGrantedSuccessfully);
+        okResult?.Value.Should().Be(ResultMessages.AccessGrantedSuccessfully);
         A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(fakeNoteModel, A<IEnumerable<string>>.Ignored))
             .MustHaveHappenedOnceExactly();
@@ -214,7 +214,7 @@ public class NotesControllerTests
         //Assert
         result.Should().BeOfType<NotFoundObjectResult>();
         var notFoundResult = result as NotFoundObjectResult;
-        notFoundResult?.Value.Should().Be(ErrorMessages.NoteNotFound);
+        notFoundResult?.Value.Should().Be(ResultMessages.NoteNotFound);
         A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).MustHaveHappenedOnceExactly();
         A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<Note>.Ignored, A<IEnumerable<string>>.Ignored)).MustNotHaveHappened();
         _output.WriteLine("NotFoundObjectResult returned as expected when Note does not exist");

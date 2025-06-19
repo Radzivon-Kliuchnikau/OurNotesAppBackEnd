@@ -18,7 +18,8 @@ public class NotesController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ILogger<NotesController> _logger;
     private readonly IGrantAccessToNoteService _grantAccessToNoteService;
-
+    private string? UserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+    
     public NotesController(
         INoteRepository noteRepository, 
         IMapper mapper, 
@@ -35,13 +36,12 @@ public class NotesController : ControllerBase
     public async Task<ActionResult<IEnumerable<NoteReadDto>>> GetAllNotes()
     {
         _logger.LogInformation("Request received by Controller {Controller}, Action: {ControllerAction}", nameof(NotesController), nameof(GetAllNotes));
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
+        if (UserId == null)
         {
-            return Unauthorized(ErrorMessages.UserIdNotFound);
+            return Unauthorized(ResultMessages.UserIdNotFound);
         }
         
-        var notes = await _noteRepository.GetNotesUserHaveAccessTo(userId);
+        var notes = await _noteRepository.GetNotesUserHaveAccessTo(UserId);
         
         return Ok(_mapper.Map<IEnumerable<NoteReadDto>>(notes));
     }
@@ -62,17 +62,16 @@ public class NotesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<NoteReadDto>> CreateNote([FromBody] NoteCreateDto noteCreateDto)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
+        if (UserId == null)
         {
-            return Unauthorized(ErrorMessages.UserIdNotFound);
+            return Unauthorized(ResultMessages.UserIdNotFound);
         }
         
         var noteModel = _mapper.Map<Note>(noteCreateDto);
-        noteModel.AppUserId = userId;
+        noteModel.AppUserId = UserId;
         
         await _noteRepository.AddEntityAsync(noteModel);
-        await _grantAccessToNoteService.GrantAccessToNoteAsync(noteModel, noteCreateDto.UsersEmailsWithGrantedAccess);
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(UserId, noteModel, noteCreateDto.UsersEmailsWithGrantedAccess);
 
         var noteReadDto = _mapper.Map<NoteReadDto>(noteModel);
         
@@ -85,12 +84,26 @@ public class NotesController : ControllerBase
         var note = await _noteRepository.GetEntityByIdAsync(Guid.Parse(noteId));
         if (note == null)
         {
-            return NotFound(ErrorMessages.NoteNotFound);
+            return NotFound(ResultMessages.NoteNotFound);
         }
         
-        await _grantAccessToNoteService.GrantAccessToNoteAsync(note, listOfUsersToGrantAccessTo); // TODO: Think about Error handling of this method
+        await _grantAccessToNoteService.GrantAccessToNoteAsync(UserId, note, listOfUsersToGrantAccessTo); // TODO: Think about Error handling of this method
 
-        return Ok(ErrorMessages.AccessGrantedSuccessfully);
+        return Ok(ResultMessages.AccessGrantedSuccessfully);
+    }
+    
+    [HttpPost("{noteId}/remove-grant-access")]
+    public async Task<ActionResult> RemoveGrantAccessToNote([FromRoute] string noteId, [FromBody] string[] listOfUsersToRemoveGrantAccess)
+    {
+        var note = await _noteRepository.GetEntityByIdAsync(Guid.Parse(noteId));
+        if (note == null)
+        {
+            return NotFound(ResultMessages.NoteNotFound);
+        }
+        
+        await _grantAccessToNoteService.RemoveGrantAccessFromNoteAsync(UserId, note, listOfUsersToRemoveGrantAccess); // TODO: Think about Error handling of this method
+
+        return Ok(ResultMessages.AccessRemovedSuccessfully);
     }
 
     [HttpPut("{id}")]
