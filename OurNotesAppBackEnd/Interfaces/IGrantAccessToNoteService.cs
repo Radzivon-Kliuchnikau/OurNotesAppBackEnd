@@ -4,5 +4,6 @@ namespace OurNotesAppBackEnd.Interfaces;
 
 public interface IGrantAccessToNoteService
 {
-    Task GrantAccessToNoteAsync(Note note, IEnumerable<string> emails);
+    Task GrantAccessToNoteAsync(string? userId, Note note, IEnumerable<string> emails);
+    Task RemoveGrantedAccessFromNoteAsync(string? userId, Note note, IEnumerable<string> emails);
 }
