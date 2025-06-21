@@ -93,7 +93,7 @@ public class NotesController : ControllerBase
     }
     
     [HttpPost("{noteId}/remove-grant-access")]
-    public async Task<ActionResult> RemoveGrantAccessToNote([FromRoute] string noteId, [FromBody] string[] listOfUsersToRemoveGrantAccess)
+    public async Task<ActionResult> RemoveGrantedAccessToNote([FromRoute] string noteId, [FromBody] string[] listOfUsersToRemoveGrantAccess)
     {
         var note = await _noteRepository.GetEntityByIdAsync(Guid.Parse(noteId));
         if (note == null)
@@ -101,7 +101,7 @@ public class NotesController : ControllerBase
             return NotFound(ResultMessages.NoteNotFound);
         }
         
-        await _grantAccessToNoteService.RemoveGrantAccessFromNoteAsync(UserId, note, listOfUsersToRemoveGrantAccess); // TODO: Think about Error handling of this method
+        await _grantAccessToNoteService.RemoveGrantedAccessFromNoteAsync(UserId, note, listOfUsersToRemoveGrantAccess); // TODO: Think about Error handling of this method
 
         return Ok(ResultMessages.AccessRemovedSuccessfully);
     }

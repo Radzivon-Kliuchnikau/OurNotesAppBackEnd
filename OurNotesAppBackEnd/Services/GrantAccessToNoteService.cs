@@ -36,7 +36,7 @@ public class GrantAccessToNoteService(ApplicationDbContext context) : IGrantAcce
         await context.SaveChangesAsync();
     }
 
-    public async Task RemoveGrantAccessFromNoteAsync(string? userId, Note note, IEnumerable<string> emails)
+    public async Task RemoveGrantedAccessFromNoteAsync(string? userId, Note note, IEnumerable<string> emails)
     {
         var usersToRemoveAccess = await context.Users
             .Where(u => emails != null && emails.Contains(u.Email))

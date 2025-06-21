@@ -139,7 +139,7 @@ public class NotesControllerTests
         A.CallTo(() => _mapper.Map<Note>(A<NoteCreateDto>.Ignored)).Returns(A.Fake<Note>());
         A.CallTo(() => _mapper.Map<NoteReadDto>(A<Note>.Ignored)).Returns(A.Fake<NoteReadDto>());
         A.CallTo(() => _noteRepository.AddEntityAsync(A<Note>.Ignored)).Returns(Task.CompletedTask);
-        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
+        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<string>.Ignored, A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
             .Returns(Task.CompletedTask);
         
         //Act
@@ -152,7 +152,7 @@ public class NotesControllerTests
         createdAtResult.RouteName.Should().Be(nameof(_noteController.GetNoteById));
         returnedNote.Should().NotBeNull();
         A.CallTo(() => _noteRepository.AddEntityAsync(A<Note>.That.Matches(n => n.AppUserId == _fakeUserId))).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
+        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<string>.Ignored, A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
             .MustHaveHappenedOnceExactly();
         _output.WriteLine("Note created successfully and returned through CreatedAtRoute");
     }
@@ -173,7 +173,7 @@ public class NotesControllerTests
         //Assert
         unauthorizedResult.Should().NotBeNull();
         A.CallTo(() => _noteRepository.AddEntityAsync(A<Note>.Ignored)).MustNotHaveHappened();
-        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
+        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<string>.Ignored, A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
             .MustNotHaveHappened();
         _output.WriteLine("UnauthorizedObjectResult returned as expected when UserId is null");
     }
@@ -187,7 +187,7 @@ public class NotesControllerTests
         
         //Act
         A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).Returns(Task.FromResult<Note?>(fakeNoteModel));
-        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(fakeNoteModel, A<IEnumerable<string>>.Ignored))
+        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<string>.Ignored, fakeNoteModel, A<IEnumerable<string>>.Ignored))
             .DoesNothing();
         var result = await _noteController.GrantAccessToNote(noteId.ToString(), ["example@example.com"]);
 
@@ -196,7 +196,7 @@ public class NotesControllerTests
         var okResult = result as OkObjectResult;
         okResult?.Value.Should().Be(ResultMessages.AccessGrantedSuccessfully);
         A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(fakeNoteModel, A<IEnumerable<string>>.Ignored))
+        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<string>.Ignored, fakeNoteModel, A<IEnumerable<string>>.Ignored))
             .MustHaveHappenedOnceExactly();
         _output.WriteLine("GrantAccessToNote called with correct parameters");
     }
@@ -216,7 +216,50 @@ public class NotesControllerTests
         var notFoundResult = result as NotFoundObjectResult;
         notFoundResult?.Value.Should().Be(ResultMessages.NoteNotFound);
         A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).MustHaveHappenedOnceExactly();
-        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<Note>.Ignored, A<IEnumerable<string>>.Ignored)).MustNotHaveHappened();
+        A.CallTo(() => _grantAccessToNoteService.GrantAccessToNoteAsync(A<string>.Ignored, A<Note>.Ignored, A<IEnumerable<string>>.Ignored)).MustNotHaveHappened();
+        _output.WriteLine("NotFoundObjectResult returned as expected when Note does not exist");
+    }
+    
+    [Fact(DisplayName = "RemoveGrantedAccessToNote returns Ok when granted access removed successfully")]
+    public async Task NotesController_RemoveGrantedAccessToNote_Returns_Ok_When_Granted_Access_Removed_Successfully()
+    {
+        //Arrange
+        var noteId = Guid.NewGuid();
+        var fakeNoteModel = A.Fake<Note>();
+        
+        //Act
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).Returns(Task.FromResult<Note?>(fakeNoteModel));
+        A.CallTo(() => _grantAccessToNoteService.RemoveGrantedAccessFromNoteAsync(A<string>.Ignored, fakeNoteModel, A<IEnumerable<string>>.Ignored))
+            .DoesNothing();
+        var result = await _noteController.RemoveGrantedAccessToNote(noteId.ToString(), ["example@example.com"]);
+
+        //Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult?.Value.Should().Be(ResultMessages.AccessRemovedSuccessfully);
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _grantAccessToNoteService.RemoveGrantedAccessFromNoteAsync(A<string>.Ignored, fakeNoteModel, A<IEnumerable<string>>.Ignored))
+            .MustHaveHappenedOnceExactly();
+        _output.WriteLine("Access to Note removed successfully and returned OkObjectResult");
+    }
+    
+    [Fact(DisplayName = "RemoveGrantedAccessToNote returns Not Found when note does not exist")]
+    public async Task NotesController_RemoveGrantedAccessToNote_Returns_NotFound_When_Note_Does_Not_Exist()
+    {
+        //Arrange
+        var noteId = Guid.NewGuid();
+        
+        //Act
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).Returns(Task.FromResult<Note?>(null));
+        var result = await _noteController.RemoveGrantedAccessToNote(noteId.ToString(), ["example@example.com"]);
+
+        //Assert
+        result.Should().BeOfType<NotFoundObjectResult>();
+        var okResult = result as NotFoundObjectResult;
+        okResult?.Value.Should().Be(ResultMessages.NoteNotFound);
+        A.CallTo(() => _noteRepository.GetEntityByIdAsync(noteId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => _grantAccessToNoteService.RemoveGrantedAccessFromNoteAsync(A<string>.Ignored, A<Note>.Ignored, A<IEnumerable<string>>.Ignored))
+            .MustNotHaveHappened();
         _output.WriteLine("NotFoundObjectResult returned as expected when Note does not exist");
     }
 
